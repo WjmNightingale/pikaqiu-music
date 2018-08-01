@@ -1,15 +1,17 @@
 <template>
-  <div class='page'>
+  <div class="recommend">
     这是我的详情页
   </div>
 </template>
 
-<script type='text/ecmascript-6'>
+<script type="text/ecmascript-6">
 import { getRecommend } from 'api/recommend'
 import { ERR_OK } from 'api/config'
 export default {
   data() {
-    return {}
+    return {
+      recommends: []
+    }
   },
   created() {
     this._getRecommend()
@@ -18,7 +20,7 @@ export default {
     _getRecommend() {
       getRecommend().then(res => {
         if (res.code === ERR_OK) {
-          console.log(res.data.slider)
+          this.recommends = res.data.slider
         }
       })
     }
@@ -27,5 +29,5 @@ export default {
 }
 </script>
 
-<style scoped lang='stylus'>
+<style scoped lang="stylus">
 </style>
