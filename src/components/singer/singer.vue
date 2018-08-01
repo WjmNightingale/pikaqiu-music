@@ -1,7 +1,7 @@
 <template>
- <div class="page">
-     这是歌手详情页
- </div>
+  <div class="page">
+    这是歌手详情页
+  </div>
 </template>
 
 <script type="text/ecmascript-6">
