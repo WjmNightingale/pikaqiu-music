@@ -1,8 +1,10 @@
 <template>
-  <div id="app">
+  <div id="app" class="app">
     <m-header></m-header>
     <tab></tab>
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -18,5 +20,5 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="stylus">
 </style>

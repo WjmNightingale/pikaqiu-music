@@ -1,10 +1,17 @@
 <template>
-  <div class="page">
-    <p>这是导航栏</p>
-    <router-link to="/recommend">我的</router-link>
-    <router-link to="/rank">排行榜</router-link>
-    <router-link to="/search">搜索栏</router-link>
-    <router-link to="/singer">歌手</router-link>
+  <div class="tab">
+    <router-link tag="div" class="tab-item" to="/recommend">
+      <span class="tab-link">推荐</span>
+    </router-link>
+    <router-link tag="div" class="tab-item" to="/singer">
+      <span class="tab-link">歌手</span>
+    </router-link>
+    <router-link tag="div" class="tab-item" to="/search">
+      <span class="tab-link">搜索</span>
+    </router-link>
+    <router-link tag="div" class="tab-item" to="/rank">
+      <span class="tab-lin">我的</span>
+    </router-link>
   </div>
 </template>
 
@@ -18,4 +25,20 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+@import '~common/stylus/variable'
+.tab
+  display flex
+  height 44px
+  line-height 44px
+  font-size $font-size-medium
+  .tab-item
+    flex 1
+    text-align center
+    .tab-link
+      padding-bottom 5px
+      color $color-text-1
+    &.router-link-active
+      .tab-link
+        color $color-theme
+        border-bottom 2px solid $color-theme
 </style>
