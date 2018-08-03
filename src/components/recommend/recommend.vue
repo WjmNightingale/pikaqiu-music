@@ -6,7 +6,7 @@
           <slider>
             <div v-for="item in recommends" :key="item.id">
               <a :href="item.linkUrl">
-                <img :src="item.picUrl" alt="轮播">
+                <img class="needsclick" @load="loadImage" :src="item.picUrl" alt="轮播">
               </a>
             </div>
           </slider>
@@ -16,7 +16,7 @@
           <ul>
             <li class="item" v-for="item in discList" :key="item.dissid">
               <div class="icon">
-                <img width="60" height="60" :src="item.imgurl" alt="icon">
+                <img width="60" height="60" v-lazy="item.imgurl" alt="icon">
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.creator.name"></h2>
@@ -39,7 +39,8 @@ export default {
   data() {
     return {
       recommends: [],
-      discList: []
+      discList: [],
+      checkLoader: false
     }
   },
   created() {
@@ -61,6 +62,14 @@ export default {
           console.log(this.discList)
         }
       })
+    },
+    loadImage() {
+      // 监听slider的图片加载，重新计算scroll的高度
+      if (!this.checkLoader) {
+        console.log('图片第一次加载')
+        this.$refs.scroll.refresh()
+        this.checkLoader = true
+      }
     }
   },
   components: {

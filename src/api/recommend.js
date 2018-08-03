@@ -32,7 +32,6 @@ function getDiscList() {
     rnd: Math.random(),
     format: 'json'
   })
-  console.log('开始执行axios请求')
   return axios.get(url, {
     params: data
   }).then((res) => {
