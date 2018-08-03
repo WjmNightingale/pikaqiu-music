@@ -73,7 +73,21 @@ export default {
           pageIndex -= 1
         }
         this.currentPageIndex = pageIndex
+
+        if (this.autoPlay) {
+          clearTimeout(this.timer)
+          this._play()
+        }
       })
+    },
+    _play() {
+      let targetPageIndex = this.currentPageIndex + 1
+      if (this.loop) {
+        targetPageIndex += 1
+      }
+      this.timer = setTimeout(() => {
+        this.slider.goToPage(targetPageIndex, 0, 400)
+      }, this.interval)
     }
   },
   mounted() {
@@ -83,7 +97,18 @@ export default {
       this._setSliderWidth()
       this._initDots()
       this._initSlider()
+      if (this.autoPlay) {
+        this._play()
+      }
     }, 20)
+
+    window.addEventListener('resize', () => {
+      if (!this.slider) {
+        return
+      }
+      this._setSliderWidth(true)
+      this.slider.refresh()
+    })
   }
 }
 </script>
