@@ -109,6 +109,10 @@ export default {
       this._setSliderWidth(true)
       this.slider.refresh()
     })
+  },
+  destroyed() {
+    // 组件销毁时 释放计时器内存
+    clearTimeout(this.timer)
   }
 }
 </script>
