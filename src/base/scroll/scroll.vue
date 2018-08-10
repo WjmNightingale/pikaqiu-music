@@ -24,6 +24,10 @@ export default {
     refreshDealy: {
       type: Number,
       default: 20
+    },
+    listenScroll: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -41,6 +45,13 @@ export default {
         probeType: this.probeType,
         click: this.click
       })
+      if (this.listenScroll) {
+        let vm = this
+        this.scroll.on('scroll', pos => {
+          // pos Object
+          vm.$emit('scroll', pos)
+        })
+      }
     },
     enable() {
       this.scroll && this.scroll.enable()
