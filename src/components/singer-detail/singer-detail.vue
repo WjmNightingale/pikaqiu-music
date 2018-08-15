@@ -10,9 +10,13 @@
 import { mapGetters } from 'vuex'
 import { ERR_OK } from 'api/config'
 import { getSingerDetail } from 'api/singer'
+import { getSongUrl } from 'api/song'
+import { createSong } from 'common/js/song'
 export default {
   data() {
-    return {}
+    return {
+      songs: []
+    }
   },
   computed: {
     ...mapGetters(['singer'])
@@ -26,15 +30,31 @@ export default {
       }
       getSingerDetail(singerId).then(res => {
         if (res.code === ERR_OK) {
-          console.log(res)
+          this.songs = this._normalizeSongs(res.data.list)
+          if (this.songs) {
+            // 获取音乐url
+            this._getSongUrl()
+          }
+          console.log(this.songs)
         }
       })
+    },
+    _getSongUrl() {
+      getSongUrl(this.songs)
+    },
+    _normalizeSongs(list) {
+      let ret = []
+      list.forEach(item => {
+        let { musicData } = item
+        if (musicData.songid && musicData.albummid) {
+          ret.push(createSong(musicData))
+        }
+      })
+      return ret
     }
   },
   components: {},
   created() {
-    console.log('vuex 数据分发')
-    console.log(this.singer)
     this._getSingerDetail()
   }
 }
