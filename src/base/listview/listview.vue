@@ -5,7 +5,7 @@
       <li v-for="(group,index) in data" :key="index" class="list-group" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li v-for="item in group.items" :key="item.id" class="list-group-item">
+          <li v-for="item in group.items" :key="item.id" @click="selectItem(item)" class="list-group-item">
             <img class="avatar" v-lazy="item.avatar" alt="avatar" />
             <span class="name">{{item.name}}</span>
           </li>
@@ -19,13 +19,21 @@
         </li>
       </ul>
     </div>
+    <div class="list-fixed" ref="fixed" v-show="fixedTitle">
+      <h1 class="fixed-title">{{fixedTitle}}</h1>
+    </div>
+    <div class="loading-container" v-show="!data">
+      <loading></loading>
+    </div>
   </scroll>
 </template>
 
 <script type="text/ecmascript-6">
 import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 import { getData } from 'common/js/dom'
 const ANCHOR_HEIGHT = 20
+const TITLE_HEIGHT = 30
 export default {
   props: {
     data: {
@@ -36,7 +44,8 @@ export default {
   data() {
     return {
       scrollY: -1,
-      currentIndex: 0
+      currentIndex: 0,
+      diff: -1
     }
   },
   computed: {
@@ -44,6 +53,14 @@ export default {
       return this.data.map(group => {
         return group.title.substr(0, 1)
       })
+    },
+    fixedTitle() {
+      if (this.scrollY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex]
+        ? this.data[this.currentIndex].title
+        : ''
     }
   },
   watch: {
@@ -66,17 +83,31 @@ export default {
         let maxHieght = listHeight[i + 1]
         if (-newY >= minHeight && -newY < maxHieght) {
           this.currentIndex = i
+          this.diff = maxHieght + newY
           return
         }
       }
       // 滚动到底部 且-newY > listHeight最后一个元素的值
       this.currentIndex = listHeight.length - 2
+    },
+    diff(newVal) {
+      let fixedTop =
+        newVal > 0 && newVal < TITLE_HEIGHT ? newVal - TITLE_HEIGHT : 0
+      if (this.fixedTop === fixedTop) {
+        return
+      }
+      this.fixedTop = fixedTop
+      this.$refs.fixed.style.tarnsfrom = `translate3d(0, ${fixedTop}px, 0)`
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Loading
   },
   methods: {
+    selectItem(item) {
+      this.$emit('select', item)
+    },
     onShortcutTouchStar(e) {
       let anchorIndex = getData(e.target, 'index')
       let firstTouch = e.touches[0]
