@@ -1,8 +1,6 @@
 <template>
   <transition name="slide">
-    <div class="singer-detail">
-      <p>这里是歌手详情页</p>
-    </div>
+    <music-list :songs="songs" :title="title" :bg-image="bgImage"></music-list>
   </transition>
 </template>
 
@@ -12,6 +10,7 @@ import { ERR_OK } from 'api/config'
 import { getSingerDetail } from 'api/singer'
 import { getSongUrl } from 'api/song'
 import { createSong } from 'common/js/song'
+import MusicList from 'components/music-list/music-list'
 export default {
   data() {
     return {
@@ -19,6 +18,12 @@ export default {
     }
   },
   computed: {
+    title() {
+      return this.singer.name
+    },
+    bgImage() {
+      return this.singer.avatar
+    },
     ...mapGetters(['singer'])
   },
   methods: {
@@ -35,12 +40,12 @@ export default {
             // 获取音乐url
             this._getSongUrl()
           }
-          console.log(this.songs)
         }
       })
     },
     _getSongUrl() {
       getSongUrl(this.songs)
+      console.log(new Date())
     },
     _normalizeSongs(list) {
       let ret = []
@@ -53,24 +58,20 @@ export default {
       return ret
     }
   },
-  components: {},
+  components: {
+    MusicList
+  },
+  mounted() {},
   created() {
+    console.log(new Date())
     this._getSingerDetail()
+    console.log(new Date())
+    console.log(this.songs)
   }
 }
 </script>
 
 <style scoped lang="stylus">
-.singer-detail
-  position fixed
-  height 100%
-  width 100%
-  z-index 100
-  top 0
-  left 0
-  right 0
-  bottom 0
-  background $color-background
 .slide-enter-active, .slide-leave-active
   transition all 0.3s
 .slide-enter, .slide-leave

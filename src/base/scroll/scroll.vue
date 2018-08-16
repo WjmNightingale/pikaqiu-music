@@ -79,6 +79,7 @@ export default {
   mounted() {
     setTimeout(() => {
       this._initScroll()
+      console.log(this.scroll)
     }, 20)
   }
 }

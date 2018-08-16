@@ -151,7 +151,6 @@ export default {
         height += element.clientHeight
         this.listHeight.push(height)
       }
-      console.log(this.listHeight)
     }
   },
   created() {
