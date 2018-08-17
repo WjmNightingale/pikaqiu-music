@@ -16,7 +16,7 @@
     <div class="bg-layer" ref="layer"></div>
     <scroll class="list" ref="list" :data="songs" :listen-scroll="listenScroll" :probe-type="probeType" @scroll="onScroll">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @select="selectSong" :songs="songs"></song-list>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <loading></loading>
@@ -30,6 +30,7 @@ import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import SongList from 'base/song-list/song-list'
 import { prefixStyle } from 'common/js/dom'
+import { mapActions } from 'vuex'
 const RESERVED_HEIGHT = 40
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
@@ -70,7 +71,15 @@ export default {
     onScroll(pos) {
       // onscroll 实时获取滚动的距离（竖直方向）
       this.scrollY = pos.y
-    }
+    },
+    selectSong(song, index) {
+      // 开始播放歌曲
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
+    ...mapActions(['selectPlay'])
   },
   watch: {
     scrollY(newY) {
