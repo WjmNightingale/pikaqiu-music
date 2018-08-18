@@ -3,7 +3,7 @@ const singer = state => state.singer
 
 const playing = state => state.playing
 
-const fullScreen = state => state.playing
+const fullScreen = state => state.fullScreen
 
 const playList = state => state.playList
 

@@ -1,7 +1,7 @@
 <template>
   <div class="music-list">
     <div class="back" @click="onBack">
-      <i class="icon-back">&lt;</i>
+      <i class="icon-back"></i>
     </div>
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
@@ -148,6 +148,7 @@ export default {
       padding 10px
       font-size $font-size-large-x
       color $color-theme
+      z-index 9999
   .title
     position absolute
     top 0
