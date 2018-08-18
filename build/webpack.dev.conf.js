@@ -27,6 +27,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
   // these devServer options should be customized in /config/index.js
   devServer: {
+    host: config.dev.host,
+    port: config.dev.port,
     // axios代理请求
     before(app) {
       console.log('axios代理请求')
