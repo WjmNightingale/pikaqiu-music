@@ -15,8 +15,8 @@
         <div class="middle">
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd" ref="imageWrapper">
-                <img class="image" :src="currentSong.img" ref="img">
+              <div class="cd" ref="normalImgWrapper">
+                <img :class="cdCls" class="image" :src="currentSong.img" ref="img">
               </div>
             </div>
             <div class="playing-lyric-wrapper">
@@ -25,18 +25,29 @@
           </div>
         </div>
         <div class="bottom">
+          <div class="dot-wrapper">
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <div class="progress-wrapper">
+            <span class="time time-left">{{format(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar @percent-change="onProgressBarChange" :percent="percent"></progress-bar>
+            </div>
+            <span class="time time-right">{{format(currentSong.duration)}}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i @click="prev" class="icon-prev"></i>
             </div>
-            <div class="icon i-center">
-              <i class="icon-play"></i>
+            <div class="icon i-center" :class="disableCls">
+              <i @click="togglePlaying" :class="iconPlayState"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -48,18 +59,23 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="onOpen">
         <div class="icon">
-          <img width="40" height="40" :src="currentSong.img">
+          <div class="mini-img-wrapper" ref="miniImgWrapper">
+            <img :class="cdCls" width="40" height="40" :src="currentSong.img">
+          </div>
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
-        <div class="control"></div>
+        <div class="control">
+          <i @click.stop="togglePlaying" :class="miniIconPlayState"></i>
+        </div>
         <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="timeUpdate"></audio>
   </div>
 </template>
 
@@ -67,13 +83,59 @@
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from 'common/js/dom'
+import ProgressBar from 'base/progress-bar/progress-bar'
 const transform = prefixStyle('transform')
 export default {
   data() {
-    return {}
+    return {
+      // @param -- songReady 用来标记audio对象是否加载成功
+      songReady: false,
+      // @param -- currentTime 用来标记播放时间
+      currentTime: 0
+    }
   },
   computed: {
-    ...mapGetters(['fullScreen', 'playList', 'currentSong'])
+    percent() {
+      return this.currentTime / this.currentSong.duration
+    },
+    cdCls() {
+      return this.playing ? 'play' : 'pause'
+    },
+    disableCls() {
+      return this.songReady ? '' : 'disable'
+    },
+    iconPlayState() {
+      return this.playing ? 'icon-pause' : 'icon-play'
+    },
+    miniIconPlayState() {
+      return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+    },
+    ...mapGetters([
+      'fullScreen',
+      'playList',
+      'currentSong',
+      'playing',
+      'currentIndex'
+    ])
+  },
+  watch: {
+    currentSong() {
+      this.$nextTick(() => {
+        this.$refs.audio.play()
+      })
+    },
+    playing(newPlaying) {
+      const audio = this.$refs.audio
+      if (newPlaying) {
+        this.$nextTick(() => {
+          audio.play()
+        })
+      } else {
+        this.$nextTick(() => {
+          audio.pause()
+        })
+      }
+    }
   },
   methods: {
     onClose() {
@@ -84,9 +146,56 @@ export default {
       // 打开播放器
       this.setFullScreen(true)
     },
+    timeUpdate(e) {
+      this.currentTime = e.target.currentTime
+    },
+    prev() {
+      if (!this.songReady) {
+        return
+      }
+      let prevIndex = this.currentIndex - 0 - 1
+      prevIndex = prevIndex < 0 ? this.playList.length - 1 : prevIndex
+      this.setCurrentIndex(prevIndex)
+      // 暂停切歌
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      // 切歌动作完成后，当前歌曲的audio对象应该是处于未加载状态
+      this.songReady = false
+    },
+    next() {
+      if (!this.songReady) {
+        return
+      }
+      let nextIndex = this.currentIndex - 0 + 1
+      nextIndex = nextIndex === this.playList.length ? 0 : nextIndex
+      this.setCurrentIndex(nextIndex)
+      // 上首歌是暂停，切到下一首歌，icon图标要变化
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      // 切歌动作完成后，当前歌曲的audio对象应该是处于未加载状态
+      this.songReady = false
+    },
+    ready() {
+      this.songReady = true
+    },
+    error() {
+      this.songReady = true
+    },
+    onProgressBarChange(percent) {
+      console.log('拖动事件')
+      // 拖动事件处理函数
+      this.$refs.audio.currentTime = this.currentSong.duration * percent
+    },
+    togglePlaying() {
+      // 点击播放或是暂停
+      this.setPlaingState(!this.playing)
+    },
     // vue 钩子动画函数
     enter(el, done) {
       // el dom元素 done 回调函数
+      // console.log(el)
       const { x, y, scale } = this._getPosAndScroll()
       let animation = {
         0: {
@@ -129,14 +238,38 @@ export default {
       this.$refs.cdWrapper.style.transition = ''
       this.$refs.cdWrapper.style[transform] = ''
     },
+    format(interval) {
+      // number | 0 => 向下取整
+      interval = interval | 0
+      const minute = (interval / 60) | 0
+      const second = this._pad(interval % 60)
+      return `${minute}:${second}`
+    },
+    // 字符串补0函数
+    _pad(num, n = 2) {
+      let len = num.toString().length
+      while (len < n) {
+        num = '0' + num
+        len = len + 1
+      }
+      return num
+    },
     _getPosAndScroll() {
+      // mini播放器歌曲图片宽
       const targetWidth = 40
+      // mini播放器歌曲图片中心点距离屏幕左边的距离
       const paddingLeft = 40
+      // mini播放器歌曲图片中心点距离屏幕底部的距离
       const paddingBottom = 30
+      // normal播放器唱片图片容器(div.middle)距离屏幕顶部的距离
       const paddingTop = 80
+      // normal播放器(div.cdWrapper)宽
       const width = window.innerWidth * 0.8
+      // mini播放器图放大到div.cdWrapper宽所需要的放大比
       const scale = targetWidth / width
+      // mini播放器歌曲图片中心点移动到div.cdWrapper中心点在x轴上的偏移
       const x = -(window.innerWidth / 2 - paddingLeft)
+      // mini播放器歌曲图片中心点移动到div.cdWrapper中心点在y轴上的偏移
       const y = window.innerHeight - paddingBottom - width / 2 - paddingTop
       return {
         x,
@@ -145,10 +278,14 @@ export default {
       }
     },
     ...mapMutations({
-      setFullScreen: 'SET_FULL_SCREEN'
+      setFullScreen: 'SET_FULL_SCREEN',
+      setPlaingState: 'SET_PLAYING_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX'
     })
   },
-  components: {},
+  components: {
+    ProgressBar
+  },
   created() {
     // console.log(this.currentSong)
   }
@@ -237,8 +374,10 @@ export default {
               box-sizing border-box
               border-radius 50%
               border 10px solid rgba(255, 255, 255, 0.1)
-            .play
-              animation rotate 20s linear infinite
+              &.play
+                animation rotate 20s linear infinite
+              &.pause
+                animation-play-state paused
         .playing-lyric-wrapper
           width 80%
           margin 30px auto 0 auto
@@ -302,9 +441,9 @@ export default {
           flex 0 0 30px
           line-height 30px
           width 30px
-          &.time-l
+          &.time-left
             text-align left
-          &.time-r
+          &.time-right
             text-align right
         .progress-bar-wrapper
           flex 1
@@ -358,7 +497,7 @@ export default {
       width 40px
       height 40px
       padding 0 10px 0 20px
-      .imgWrapper
+      .mini-img-wrapper
         height 100%
         width 100%
         img
