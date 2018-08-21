@@ -187,6 +187,9 @@ export default {
       console.log('拖动事件')
       // 拖动事件处理函数
       this.$refs.audio.currentTime = this.currentSong.duration * percent
+      if (!this.playing) {
+        this.togglePlaying()
+      }
     },
     togglePlaying() {
       // 点击播放或是暂停

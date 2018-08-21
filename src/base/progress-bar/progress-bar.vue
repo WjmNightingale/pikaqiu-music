@@ -1,5 +1,5 @@
 <template>
-  <div class="progress-bar" ref="progressBar">
+  <div class="progress-bar" ref="progressBar" @click="progressClick">
     <div class="bar-inner">
       <div class="progress" ref="progress"></div>
       <div class="progress-btn-wrapper" @touchstart.prevent="progressTouchStart" @touchmove.prevent="progressTouchMove" @touchend.prevent="progressTouchEnd">
@@ -36,6 +36,11 @@ export default {
   },
   components: {},
   methods: {
+    progressClick(e) {
+      // 点击进度条歌曲事件改变
+      this._offset(e.offsetX)
+      this._triggerTouch()
+    },
     progressTouchStart(e) {
       this.touch.initiated = true
       // e.touches[0]表示移动端触屏事件 第一个手指所做的动作
