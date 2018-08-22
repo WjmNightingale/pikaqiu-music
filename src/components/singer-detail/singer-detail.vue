@@ -63,10 +63,7 @@ export default {
   },
   mounted() {},
   created() {
-    console.log(new Date())
     this._getSingerDetail()
-    console.log(new Date())
-    console.log(this.songs)
   }
 }
 </script>

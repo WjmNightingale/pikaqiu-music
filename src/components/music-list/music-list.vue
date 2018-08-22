@@ -6,7 +6,7 @@
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper">
-        <div class="play" v-show="songs.length > 0" ref="playBtn">
+        <div class="play" v-show="songs.length > 0" ref="playBtn" @click="onRandomPlay">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -16,7 +16,7 @@
     <div class="bg-layer" ref="layer"></div>
     <scroll class="list" ref="list" :data="songs" :listen-scroll="listenScroll" :probe-type="probeType" @scroll="onScroll">
       <div class="song-list-wrapper">
-        <song-list @select="selectSong" :songs="songs"></song-list>
+        <song-list @select="onSelectSong" :songs="songs"></song-list>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <loading></loading>
@@ -72,14 +72,19 @@ export default {
       // onscroll 实时获取滚动的距离（竖直方向）
       this.scrollY = pos.y
     },
-    selectSong(song, index) {
+    onRandomPlay() {
+      this.randomPlay({
+        list: this.songs
+      })
+    },
+    onSelectSong(song, index) {
       // 开始播放歌曲
       this.selectPlay({
         list: this.songs,
         index
       })
     },
-    ...mapActions(['selectPlay'])
+    ...mapActions(['selectPlay', 'randomPlay'])
   },
   watch: {
     scrollY(newY) {
@@ -119,8 +124,6 @@ export default {
     this.$refs.list.$el.style.top = `${this.$refs.bgImage.clientHeight}px`
   },
   created() {
-    // console.log('组件创建了')
-    // console.log(this)
     this.probeType = 3
     this.listenScroll = true
   }

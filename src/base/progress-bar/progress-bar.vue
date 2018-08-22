@@ -38,7 +38,10 @@ export default {
   methods: {
     progressClick(e) {
       // 点击进度条歌曲事件改变
-      this._offset(e.offsetX)
+      // this._offset(e.offsetX)
+      const rect = this.$refs.progressBar.getBoundingClientRect()
+      const offsetWidth = e.pageX - rect.left
+      this._offset(offsetWidth)
       this._triggerTouch()
     },
     progressTouchStart(e) {
