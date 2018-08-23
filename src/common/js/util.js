@@ -1,12 +1,13 @@
 function shuffle(arr) {
   // 打乱数组
-  for (let i = 0; i < arr.length; i++) {
+  let _arr = arr.slice()
+  for (let i = 0; i < _arr.length; i++) {
     let j = getRandomInt(0, i)
-    let tmp = arr[i]
-    arr[i] = arr[j]
-    arr[j] = tmp
+    let tmp = _arr[i]
+    _arr[i] = _arr[j]
+    _arr[j] = tmp
   }
-  return arr
+  return _arr
 }
 
 function getRandomInt(min, max) {

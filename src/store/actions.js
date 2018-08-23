@@ -5,15 +5,31 @@ import {
 import {
   shuffle
 } from 'common/js/util'
+
+function findIndex(randomList, currentSong) {
+  return randomList.findIndex(item => item.id === currentSong.id)
+}
+
 const selectPlay = function ({
-  commit
+  commit,
+  state
 }, {
   list,
   index
 }) {
+  let updateList, updateIndex
+  if (state.mode === playMode.random) {
+    // 如果是随机播放
+    updateList = shuffle(list)
+    updateIndex = findIndex(updateList, list[index])
+  } else {
+    // 非随机播放
+    updateList = list
+    updateIndex = index
+  }
   commit(types.SET_SEQUENCE_LIST, list)
-  commit(types.SET_PLAY_LIST, list)
-  commit(types.SET_CURRENT_INDEX, index)
+  commit(types.SET_PLAY_LIST, updateList)
+  commit(types.SET_CURRENT_INDEX, updateIndex)
   commit(types.SET_FULL_SCREEN, true)
   commit(types.SET_PLAYING_STATE, true)
 }

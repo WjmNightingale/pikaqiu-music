@@ -137,6 +137,9 @@ export default {
         return
       }
       this.$nextTick(() => {
+        this.currentSong.getLyric().then((lyric) => {
+          console.log(lyric)
+        })
         this.$refs.audio.play()
       })
     },
