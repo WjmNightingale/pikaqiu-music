@@ -3,7 +3,7 @@
     <transition name="normal" @enter="enter" @after-enter="afterEnter" @leave="leave" @after-leave="afterLeave">
       <div class="normal-player" v-show="fullScreen">
         <div class="background">
-          <img width="100%" height="100%" :src="currentSong.image">
+          <img width="100%" height="100%" :src="currentSong.img">
         </div>
         <div class="top">
           <div class="back" @click="onClose">
@@ -12,15 +12,15 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle"
-             @touchstart.prevent="middleTouchStart"
-             @touchmove.prevent="middleTouchMove"
-             @touchend.prevent="middleTouchEnd">
+        <div class="middle" @touchstart.prevent="middleTouchStart" @touchmove.prevent="middleTouchMove" @touchend.prevent="middleTouchEnd">
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" ref="normalImgWrapper">
                 <img :class="cdCls" class="image" :src="currentSong.img" ref="img">
               </div>
+            </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{playingLyric}}</div>
             </div>
           </div>
           <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
@@ -110,6 +110,7 @@ export default {
       currentLyric: null,
       currentLineNum: 0,
       currentShow: 'cd',
+      playingLyric: '',
       radius: 32
     }
   },
@@ -149,39 +150,40 @@ export default {
       if (newSong.id === oldSong.id) {
         return
       }
-      this.$nextTick(() => {
+      this.currentLyric && this.currentLyric.stop()
+      // 为了保证浏览器能够响应audio播放，使用 setTimeout 替换 $nextTick
+      // this.$nextTick(() => {
+      //   this.getLyric()
+      //   this.$refs.audio.play()
+      // })
+      setTimeout(() => {
         this.getLyric()
         this.$refs.audio.play()
-      })
+      }, 1000)
     },
     playing(newPlaying) {
       const audio = this.$refs.audio
       if (newPlaying) {
         this.$nextTick(() => {
           audio.play()
-          this.currentLyric && this.currentLyric.play()
         })
       } else {
         this.$nextTick(() => {
           audio.pause()
-          this.currentLyric && this.currentLyric.stop()
         })
       }
     }
   },
   methods: {
     middleTouchStart(e) {
-      console.log('开始触摸')
       this.touch.initiated = true
       const touch = e.touches[0]
       // 触摸事件起始点X轴坐标
       this.touch.startX = touch.pageX
       // 触摸事件起始点Y轴坐标
       this.touch.startY = touch.pageY
-      console.log('触摸开始X坐标' + touch.pageX + 'Y坐标' + touch.pageY)
     },
     middleTouchMove(e) {
-      console.log('触摸移动')
       if (!this.touch.initiated) {
         return
       }
@@ -198,49 +200,44 @@ export default {
       // 如果当前展示的是CD,那么偏移距离为X
       // 如果展示的是LYRiC,那么偏移距离就为屏幕宽度(因为歌词展示了)
       const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
-      const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+      const offsetWidth = Math.min(
+        0,
+        Math.max(-window.innerWidth, left + deltaX)
+      )
       this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
-      this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+      let action = `translate3d(${offsetWidth}px,0,0)`
+      this.$refs.lyricList.$el.style[transform] = action
       this.$refs.lyricList.$el.style[transitionDuration] = 0
       // middleL划出时背景渐透明
       this.$refs.middleL.style.opacity = 1 - this.touch.percent
       this.$refs.middleL.style[transitionDuration] = 0
-      console.log('触摸过程中offsetWidth--' + offsetWidth)
-      console.log('触摸过程中opacity--' + (1 - this.touch.percent))
     },
     middleTouchEnd(e) {
-      console.log('触摸结束')
       let offsetWidth
       let opacity
       if (this.currentShow === 'cd') {
         // 从右向左滑动，划出歌词
-        console.log(this.touch.percent)
         if (this.touch.percent > 0.1) {
-          console.log('滑动距离占屏幕宽大于10%=》滑动')
-          offsetWidth = -window.width
+          offsetWidth = -window.innerWidth
           opacity = 0
           this.currentShow = 'lyric'
         } else {
-          console.log('滑动距离占屏幕不足10%=》未滑动')
           offsetWidth = 0
           opacity = 1
         }
       } else {
         // 从右向左滑动，隐藏歌词
         if (this.touch.percent < 0.9) {
-          console.log('滑动距离占屏幕小于90%=》滑动')
           offsetWidth = 0
           opacity = 1
           this.currentShow = 'cd'
         } else {
-          console.log('滑动距离占屏幕大于90%=》未滑动')
           offsetWidth = -window.innerWidth
           opacity = 0
         }
       }
-      console.log('触摸结束时offsetWidth--' + offsetWidth)
-      console.log('触摸结束时opacity--' + opacity)
-      this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+      let action = `translate3d(${offsetWidth}px,0,0)`
+      this.$refs.lyricList.$el.style[transform] = action
       const duration = 300
       this.$refs.lyricList.$el.style[transitionDuration] = `${duration}ms`
       this.$refs.middleL.style.opacity = opacity
@@ -285,12 +282,19 @@ export default {
       this.setCurrentIndex(_index)
     },
     getLyric() {
-      this.currentSong.getLyric().then(lyric => {
-        this.currentLyric = new Lyric(lyric, this.handleLyric)
-        if (this.playing) {
-          this.currentLyric.play()
-        }
-      })
+      this.currentSong
+        .getLyric()
+        .then(lyric => {
+          this.currentLyric = new Lyric(lyric, this.handleLyric)
+          if (this.playing) {
+            this.currentLyric.play()
+          }
+        })
+        .catch(() => {
+          this.currentLyric = null
+          this.playingLyric = ''
+          this.currentLineNum = 0
+        })
     },
     handleLyric({ lineNum, txt }) {
       this.currentLineNum = lineNum
@@ -300,39 +304,49 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
+      this.playingLyric = txt
     },
     prev() {
       if (!this.songReady) {
         return
       }
-      let prevIndex = this.currentIndex - 0 - 1
-      prevIndex = prevIndex < 0 ? this.playList.length - 1 : prevIndex
-      this.setCurrentIndex(prevIndex)
-      // 暂停切歌
-      if (!this.playing) {
-        this.togglePlaying()
+      if (this.playList.length === 1) {
+        this.loop()
+      } else {
+        let prevIndex = this.currentIndex - 0 - 1
+        prevIndex = prevIndex < 0 ? this.playList.length - 1 : prevIndex
+        this.setCurrentIndex(prevIndex)
+        // 暂停切歌
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        // 切歌动作完成后，当前歌曲的audio对象应该是处于未加载状态
+        this.songReady = false
       }
-      // 切歌动作完成后，当前歌曲的audio对象应该是处于未加载状态
-      this.songReady = false
     },
     next() {
       if (!this.songReady) {
         return
       }
-      let nextIndex = this.currentIndex - 0 + 1
-      nextIndex = nextIndex === this.playList.length ? 0 : nextIndex
-      this.setCurrentIndex(nextIndex)
-      // 上首歌是暂停，切到下一首歌，icon图标要变化
-      if (!this.playing) {
-        this.togglePlaying()
+      if (this.playList.length === 1) {
+        this.loop()
+      } else {
+        let nextIndex = this.currentIndex - 0 + 1
+        nextIndex = nextIndex === this.playList.length ? 0 : nextIndex
+        this.setCurrentIndex(nextIndex)
+        // 上首歌是暂停，切到下一首歌，icon图标要变化
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        // 切歌动作完成后，当前歌曲的audio对象应该是处于未加载状态
+        this.songReady = false
       }
-      // 切歌动作完成后，当前歌曲的audio对象应该是处于未加载状态
-      this.songReady = false
     },
     loop(e) {
       // 循环播放
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
+      this.currentLyric && this.currentLyric.seek(0)
     },
     ready() {
       this.songReady = true
@@ -341,16 +355,21 @@ export default {
       this.songReady = true
     },
     onProgressBarChange(percent) {
-      console.log('拖动事件')
       // 拖动事件处理函数
+      const currentTime = this.currentSong.duration * percent
       this.$refs.audio.currentTime = this.currentSong.duration * percent
       if (!this.playing) {
         this.togglePlaying()
       }
+      this.currentLyric && this.currentLyric.seek(currentTime * 1000)
     },
     togglePlaying() {
       // 点击播放或是暂停
+      if (!this.songReady) {
+        return
+      }
       this.setPlaingState(!this.playing)
+      this.currentLyric && this.currentLyric.togglePlay()
     },
     // vue 钩子动画函数
     enter(el, done) {
