@@ -12,22 +12,29 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle">
+        <div class="middle"
+             @touchstart.prevent="middleTouchStart"
+             @touchmove.prevent="middleTouchMove"
+             @touchend.prevent="middleTouchEnd">
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" ref="normalImgWrapper">
                 <img :class="cdCls" class="image" :src="currentSong.img" ref="img">
               </div>
             </div>
-            <div class="playing-lyric-wrapper">
-              <div class="playing-lyric">假装是歌词</div>
-            </div>
           </div>
+          <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p ref="lyricLine" class="text" :class="{'current': currentLineNum === index}" v-for="(line,index) in currentLyric.lines" :key="index">{{line.txt}}</p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
-            <span class="dot"></span>
-            <span class="dot"></span>
+            <span class="dot" :class="{'active': currentShow === 'cd'}"></span>
+            <span class="dot" :class="{'active': currentShow === 'lyric'}"></span>
           </div>
           <div class="progress-wrapper">
             <span class="time time-left">{{format(currentTime)}}</span>
@@ -87,9 +94,12 @@ import animations from 'create-keyframe-animation'
 import { prefixStyle } from 'common/js/dom'
 import ProgressBar from 'base/progress-bar/progress-bar'
 import ProgressCircle from 'base/progress-circle/progress-circle'
+import Scroll from 'base/scroll/scroll'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
+import Lyric from 'lyric-parser'
 const transform = prefixStyle('transform')
+const transitionDuration = prefixStyle('transitionDuration')
 export default {
   data() {
     return {
@@ -97,6 +107,9 @@ export default {
       songReady: false,
       // @param -- currentTime 用来标记播放时间
       currentTime: 0,
+      currentLyric: null,
+      currentLineNum: 0,
+      currentShow: 'cd',
       radius: 32
     }
   },
@@ -137,9 +150,7 @@ export default {
         return
       }
       this.$nextTick(() => {
-        this.currentSong.getLyric().then((lyric) => {
-          console.log(lyric)
-        })
+        this.getLyric()
         this.$refs.audio.play()
       })
     },
@@ -148,15 +159,92 @@ export default {
       if (newPlaying) {
         this.$nextTick(() => {
           audio.play()
+          this.currentLyric && this.currentLyric.play()
         })
       } else {
         this.$nextTick(() => {
           audio.pause()
+          this.currentLyric && this.currentLyric.stop()
         })
       }
     }
   },
   methods: {
+    middleTouchStart(e) {
+      console.log('开始触摸')
+      this.touch.initiated = true
+      const touch = e.touches[0]
+      // 触摸事件起始点X轴坐标
+      this.touch.startX = touch.pageX
+      // 触摸事件起始点Y轴坐标
+      this.touch.startY = touch.pageY
+      console.log('触摸开始X坐标' + touch.pageX + 'Y坐标' + touch.pageY)
+    },
+    middleTouchMove(e) {
+      console.log('触摸移动')
+      if (!this.touch.initiated) {
+        return
+      }
+      const touch = e.touches[0]
+      // 触摸事件在X轴上滑动的距离
+      const deltaX = touch.pageX - this.touch.startX
+      // 触摸事件在Y轴上滑动的距离
+      const deltaY = touch.pageY - this.touch.startY
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        // 如果Y轴上滑动的距离大于X轴上的滑动
+        // 不是左右滑动，返回即可
+        return
+      }
+      // 如果当前展示的是CD,那么偏移距离为X
+      // 如果展示的是LYRiC,那么偏移距离就为屏幕宽度(因为歌词展示了)
+      const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
+      const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+      this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
+      this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+      this.$refs.lyricList.$el.style[transitionDuration] = 0
+      // middleL划出时背景渐透明
+      this.$refs.middleL.style.opacity = 1 - this.touch.percent
+      this.$refs.middleL.style[transitionDuration] = 0
+      console.log('触摸过程中offsetWidth--' + offsetWidth)
+      console.log('触摸过程中opacity--' + (1 - this.touch.percent))
+    },
+    middleTouchEnd(e) {
+      console.log('触摸结束')
+      let offsetWidth
+      let opacity
+      if (this.currentShow === 'cd') {
+        // 从右向左滑动，划出歌词
+        console.log(this.touch.percent)
+        if (this.touch.percent > 0.1) {
+          console.log('滑动距离占屏幕宽大于10%=》滑动')
+          offsetWidth = -window.width
+          opacity = 0
+          this.currentShow = 'lyric'
+        } else {
+          console.log('滑动距离占屏幕不足10%=》未滑动')
+          offsetWidth = 0
+          opacity = 1
+        }
+      } else {
+        // 从右向左滑动，隐藏歌词
+        if (this.touch.percent < 0.9) {
+          console.log('滑动距离占屏幕小于90%=》滑动')
+          offsetWidth = 0
+          opacity = 1
+          this.currentShow = 'cd'
+        } else {
+          console.log('滑动距离占屏幕大于90%=》未滑动')
+          offsetWidth = -window.innerWidth
+          opacity = 0
+        }
+      }
+      console.log('触摸结束时offsetWidth--' + offsetWidth)
+      console.log('触摸结束时opacity--' + opacity)
+      this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+      const duration = 300
+      this.$refs.lyricList.$el.style[transitionDuration] = `${duration}ms`
+      this.$refs.middleL.style.opacity = opacity
+    },
     onClose() {
       // 收起播放器
       this.setFullScreen(false)
@@ -191,10 +279,27 @@ export default {
       this.setPlayList(list)
     },
     resetCurrentIndex(list) {
-      let _index = list.findIndex((item) => {
+      let _index = list.findIndex(item => {
         return item.id === this.currentSong.id
       })
       this.setCurrentIndex(_index)
+    },
+    getLyric() {
+      this.currentSong.getLyric().then(lyric => {
+        this.currentLyric = new Lyric(lyric, this.handleLyric)
+        if (this.playing) {
+          this.currentLyric.play()
+        }
+      })
+    },
+    handleLyric({ lineNum, txt }) {
+      this.currentLineNum = lineNum
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5]
+        this.$refs.lyricList.scrollToElement(lineEl, 1000)
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
+      }
     },
     prev() {
       if (!this.songReady) {
@@ -342,10 +447,11 @@ export default {
   },
   components: {
     ProgressBar,
-    ProgressCircle
+    ProgressCircle,
+    Scroll
   },
   created() {
-    // console.log(this.currentSong)
+    this.touch = {}
   }
 }
 </script>
@@ -407,6 +513,7 @@ export default {
       font-size 0
       .middle-l
         display inline-block
+        // display none
         vertical-align top
         position relative
         width 100%
