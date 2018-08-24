@@ -123,6 +123,9 @@ export default {
       let anchorIndex = parseInt(this.anchorIndex + delta)
       this._scrollTo(anchorIndex)
     },
+    refresh() {
+      this.$refs.listview.refresh()
+    },
     onScroll(pos) {
       // 监听scroll组件的滚动事件
       // console.log(pos)

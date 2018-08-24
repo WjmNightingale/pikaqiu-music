@@ -9,12 +9,14 @@
 import { getSingerList } from 'api/singer'
 import { ERR_OK } from 'api/config'
 import { Singer } from 'common/js/singer'
+import { playListMixin } from 'common/js/mixin'
 import ListView from 'base/listview/listview'
 import { mapMutations } from 'vuex'
 
 const HOT_SINGER_LEN = 10
 const HOT_NAME = '热门'
 export default {
+  mixins: [playListMixin],
   data() {
     return {
       singers: []
@@ -24,6 +26,11 @@ export default {
     ListView
   },
   methods: {
+    handlePlayList() {
+      const bottom = this.playList.length > 0 ? '52px' : ''
+      this.$refs.singer.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
     selectSinger(singer) {
       this.$router.push({
         path: `/singer/${singer.id}`

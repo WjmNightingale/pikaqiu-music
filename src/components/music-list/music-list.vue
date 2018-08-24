@@ -68,7 +68,11 @@ export default {
   },
   methods: {
     // mixinPlayList
-    handlePlayList(playList) {},
+    handlePlayList() {
+      const bottom = this.playList.length > 0 ? '52px' : ''
+      this.$refs.list.$el.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
     onBack() {
       this.$router.back()
     },

@@ -1,6 +1,8 @@
 // 定义数据在mutation后如何获取
 const singer = state => state.singer
 
+const disc = state => state.disc
+
 const playing = state => state.playing
 
 const fullScreen = state => state.fullScreen
