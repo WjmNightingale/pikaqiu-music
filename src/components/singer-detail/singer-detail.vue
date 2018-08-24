@@ -38,14 +38,10 @@ export default {
           this.songs = this._normalizeSongs(res.data.list)
           if (this.songs) {
             // 获取音乐url
-            this._getSongUrl()
+            getSongUrl(this.songs)
           }
         }
       })
-    },
-    _getSongUrl() {
-      getSongUrl(this.songs)
-      console.log(new Date())
     },
     _normalizeSongs(list) {
       let ret = []

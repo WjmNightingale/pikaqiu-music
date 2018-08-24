@@ -14,7 +14,7 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li @click="selectItem(item)" class="item" v-for="item in discList" :key="item.dissid">
+            <li @click="selectDisc(item)" class="item" v-for="item in discList" :key="item.dissid">
               <div class="icon">
                 <img width="60" height="60" v-lazy="item.imgurl" alt="icon">
               </div>
@@ -30,7 +30,6 @@
         <loading></loading>
       </div>
     </scroll>
-    <!-- 二级路由容器 -->
     <router-view></router-view>
   </div>
 </template>
@@ -62,11 +61,11 @@ export default {
       this.$refs.recommend.style.bottom = bottom
       this.$refs.scroll.refresh()
     },
-    selectItem(item) {
+    selectDisc(disc) {
       this.$router.push({
-        path: `/recommend/${item.dissid}`
+        path: `/recommend/${disc.dissid}`
       })
-      this.setDisc(item)
+      this.setDisc(disc)
     },
     _getRecommend() {
       getRecommend().then(res => {

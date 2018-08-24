@@ -43,8 +43,11 @@ export default {
       default: ''
     },
     songs: {
+      // props属性为 Obejct/Array类型时，default必须为一个函数
       type: Array,
-      default: null
+      default() {
+        return []
+      }
     },
     title: {
       type: String,
@@ -87,6 +90,7 @@ export default {
     },
     onSelectSong(song, index) {
       // 开始播放歌曲
+      console.log(this.songs[index])
       this.selectPlay({
         list: this.songs,
         index
@@ -132,6 +136,7 @@ export default {
     this.$refs.list.$el.style.top = `${this.$refs.bgImage.clientHeight}px`
   },
   created() {
+    console.log('music-list组件加载啦')
     this.probeType = 3
     this.listenScroll = true
   }

@@ -1,9 +1,24 @@
-import { getLyric } from 'api/song'
-import { ERR_OK } from 'api/config'
+import {
+  getLyric
+} from 'api/song'
+import {
+  ERR_OK
+} from 'api/config'
 
-import { Base64 } from 'js-base64'
+import {
+  Base64
+} from 'js-base64'
 class Song {
-  constructor({ id, mid, singer, name, album, duration, img, url }) {
+  constructor({
+    id,
+    mid,
+    singer,
+    name,
+    album,
+    duration,
+    img,
+    url
+  }) {
     this.id = id
     this.mid = mid
     this.singer = singer
@@ -21,7 +36,6 @@ class Song {
       getLyric(this.mid).then(
         res => {
           if (res.retcode === ERR_OK) {
-            console.log(Base64.decode)
             this.lyric = Base64.decode(res.lyric)
             resolve(this.lyric)
           } else {
@@ -64,4 +78,6 @@ function filterSinger(singer) {
   })
   return ret.join('/')
 }
-export { createSong }
+export {
+  createSong
+}

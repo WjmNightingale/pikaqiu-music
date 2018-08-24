@@ -21,6 +21,7 @@ const currentSong = (state) => {
 
 export {
   singer,
+  disc,
   playing,
   fullScreen,
   playList,

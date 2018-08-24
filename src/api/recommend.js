@@ -39,7 +39,29 @@ function getDiscList() {
   })
 }
 
+function getSongList(disstid) {
+  console.log('recommed获取专辑歌曲')
+  const url = '/api/getDiscInfo'
+  const data = Object.assign({}, commonParams, {
+    disstid,
+    type: 1,
+    json: 1,
+    utf8: 1,
+    onlysong: 0,
+    platfrom: 'yqq',
+    hostUin: 0,
+    needNewCode: 0,
+    g_tk: 67232076
+  })
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 export {
   getRecommend,
-  getDiscList
+  getDiscList,
+  getSongList
 }
