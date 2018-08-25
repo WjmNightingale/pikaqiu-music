@@ -1,6 +1,6 @@
 <template>
   <transition name="slide">
-    <music-list :songs="songs" :title="title" :bg-image="bgImage"></music-list>
+    <music-list :songs="songs" :is-rank="isRank" :title="title" :bg-image="bgImage"></music-list>
   </transition>
 </template>
 
@@ -14,7 +14,8 @@ import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
-      songs: []
+      songs: [],
+      isRank: true
     }
   },
   computed: {
