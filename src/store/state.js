@@ -7,6 +7,7 @@ import {
 const state = {
   singer: {},
   disc: {},
+  topList: {},
   // 是否正在播放
   playing: false,
   // 是否全凭

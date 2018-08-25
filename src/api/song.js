@@ -1,13 +1,6 @@
-import {
-  commonParams
-} from './config'
+import { commonParams } from './config'
 import axios from 'axios'
-// import {
-//   ERR_OK
-// } from 'api/config'
-import {
-  jsonp
-} from 'common/js/jsonp'
+import { jsonp } from 'common/js/jsonp'
 
 function getSongUrl(songList) {
   if (!songList) {
@@ -26,17 +19,20 @@ function getSongUrl(songList) {
 function getSongKey(songmid) {
   // 获取歌曲的 vkey 以拼接音乐的 url
   const url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
-  const data = Object.assign({}, {
-    callback: 'musicJsonCallback',
-    loginUin: 3051522991,
-    format: 'jsonp',
-    platform: 'yqq',
-    cid: 205361747,
-    uin: 3051522991,
-    guid: 5931742855,
-    songmid: songmid,
-    filename: `C400${songmid}.m4a`
-  })
+  const data = Object.assign(
+    {},
+    {
+      callback: 'musicJsonCallback',
+      loginUin: 3051522991,
+      format: 'jsonp',
+      platform: 'yqq',
+      cid: 205361747,
+      uin: 3051522991,
+      guid: 5931742855,
+      songmid: songmid,
+      filename: `C400${songmid}.m4a`
+    }
+  )
   return jsonp(url, data)
 }
 
@@ -52,14 +48,13 @@ function getLyric(mid) {
     format: 'json'
   })
 
-  return axios.get(url, {
-    params: data
-  }).then(res => {
-    return Promise.resolve(res.data)
-  })
+  return axios
+    .get(url, {
+      params: data
+    })
+    .then(res => {
+      return Promise.resolve(res.data)
+    })
 }
 
-export {
-  getSongUrl,
-  getLyric
-}
+export { getSongUrl, getLyric }

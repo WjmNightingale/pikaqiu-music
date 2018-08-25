@@ -3,6 +3,8 @@ const singer = state => state.singer
 
 const disc = state => state.disc
 
+const topList = state => state.topList
+
 const playing = state => state.playing
 
 const fullScreen = state => state.fullScreen
@@ -22,6 +24,7 @@ const currentSong = (state) => {
 export {
   singer,
   disc,
+  topList,
   playing,
   fullScreen,
   playList,
