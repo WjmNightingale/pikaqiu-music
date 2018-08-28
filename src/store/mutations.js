@@ -1,4 +1,4 @@
-// 定义 各mutation 方法
+// 定义 各中mutation 方法
 import * as types from './mutation-types'
 
 const mutations = {
