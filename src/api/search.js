@@ -20,7 +20,7 @@ function getHotKey(url) {
   return jsonp(url, data, options)
 }
 
-function search(query, page, zhida, perpage) {
+function getSearch(query, page, zhida, perpage) {
   const url = '/api/search'
 
   const data = Object.assign({}, commonParams, {
@@ -49,5 +49,6 @@ function search(query, page, zhida, perpage) {
 }
 
 export {
-  getHotKey
+  getHotKey,
+  getSearch
 }

@@ -14,16 +14,25 @@
 </template>
 
 <script type="text/ecmascript-6">
-import {} from ''
+import { getSearch } from 'api/search'
+import { ERR_OK } from 'api/config'
+const TYPE_SINGER = 'singer'
 export default {
   props: {
     query: {
       type: String,
       default: ''
+    },
+    showSinger: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
-    return {}
+    return {
+      page: 1,
+      result: []
+    }
   },
   watch: {
     query(newQuery) {
@@ -31,7 +40,19 @@ export default {
     }
   },
   methods: {
-    search(query) {}
+    search(query) {
+      getSearch(this.query, this.page, this.showSinger).then(res => {
+        if (res.code === ERR_OK) {
+          this.result = this._genResult(res.data)
+        }
+      })
+    },
+    _genResult(data) {
+      let ret = []
+      if (data.zhida && data.zhida.singerid) {
+        ret.push({ ...data.zhida, ...{ type: TYPE_SINGER } })
+      }
+    }
   },
   components: {}
 }
