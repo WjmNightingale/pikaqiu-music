@@ -1,12 +1,12 @@
 <template>
   <div class="suggest">
     <ul class="suggest-list">
-      <li class="suggest-item">
-        <div class="icon">
+      <li class="suggest-item" v-for="(item, index) in result" :key="index">
+        <div :class="getIconCls(item)">
           <i></i>
         </div>
         <div class="name">
-          <p class="text"></p>
+          <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
     </ul>
@@ -16,6 +16,7 @@
 <script type="text/ecmascript-6">
 import { getSearch } from 'api/search'
 import { ERR_OK } from 'api/config'
+import { filterSinger } from 'common/js/song'
 const TYPE_SINGER = 'singer'
 export default {
   props: {
@@ -36,22 +37,47 @@ export default {
   },
   watch: {
     query(newQuery) {
+      console.log('侦听到了查询参数的变化')
       this.search(newQuery)
     }
   },
   methods: {
     search(query) {
+      console.log('开始查询')
       getSearch(this.query, this.page, this.showSinger).then(res => {
+        console.log('查询了啊')
+        console.log(typeof res)
+        console.log(res)
         if (res.code === ERR_OK) {
+          console.log('查询结果为--')
+          console.log(res.data)
           this.result = this._genResult(res.data)
         }
       })
+    },
+    getIconCls(item) {
+      if (item.type === TYPE_SINGER) {
+        return 'icon-mine'
+      } else {
+        return 'icon-music'
+      }
+    },
+    getDisplayName(item) {
+      if (item.type === TYPE_SINGER) {
+        return item.singername
+      } else {
+        return `${item.songname}-${filterSinger(item.singer)}`
+      }
     },
     _genResult(data) {
       let ret = []
       if (data.zhida && data.zhida.singerid) {
         ret.push({ ...data.zhida, ...{ type: TYPE_SINGER } })
       }
+      if (data.song) {
+        ret = ret.concat(data.song.list)
+      }
+      return ret
     }
   },
   components: {}

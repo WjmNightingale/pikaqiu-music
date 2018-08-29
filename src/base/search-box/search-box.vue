@@ -28,7 +28,7 @@ export default {
     }
   },
   created() {
-    this.$watch('query', (newQuery) => {
+    this.$watch('query', newQuery => {
       this.$emit('query', newQuery)
     })
   },
@@ -37,14 +37,14 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-@import "~common/stylus/variable"
-.search-box {
+@import '~common/stylus/variable'
+.search-box
   display flex
   align-items center
   box-sizing border-box
   width 100%
-  height 40px 
-  padding 0 60px
+  padding 0 6px
+  height 40px
   background $color-highlight-background
   border-radius 6px
   .icon-search
@@ -53,14 +53,14 @@ export default {
   .box
     flex 1
     margin 0 5px
-    font-size $font-size-medium
     line-height 18px
+    background $color-highlight-background
     color $color-text
+    font-size $font-size-medium
     outline 0
     &::placeholder
       color $color-text-d
   .icon-dismiss
     font-size 16px
     color $color-background
-}
 </style>

@@ -79,5 +79,6 @@ function filterSinger(singer) {
   return ret.join('/')
 }
 export {
-  createSong
+  createSong,
+  filterSinger
 }

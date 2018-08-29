@@ -8,7 +8,7 @@ import {
 
 import axios from 'axios'
 
-function getHotKey(url) {
+function getHotKey() {
   const url = 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg'
 
   const data = Object.assign({}, commonParams, {
@@ -38,7 +38,8 @@ function getSearch(query, page, zhida, perpage) {
     remoteplace: 'txt.mqq.all',
     uin: 0,
     needNewCode: 1,
-    platform: 'h5'
+    platform: 'h5',
+    format: 'json'
   })
 
   return axios.get(url, {
