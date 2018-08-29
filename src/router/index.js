@@ -29,14 +29,18 @@ export default new Router({
       component: SingerDetail
     }]
   }, {
+    path: '/search',
+    component: Search,
+    children: [{
+      path: ':id',
+      component: SingerDetail
+    }]
+  }, {
     path: '/rank',
     component: Rank,
     children: [{
       path: ':id',
       component: TopList
     }]
-  }, {
-    path: '/search',
-    component: Search
   }]
 })

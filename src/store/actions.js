@@ -6,8 +6,8 @@ import {
   shuffle
 } from 'common/js/util'
 
-function findIndex(randomList, currentSong) {
-  return randomList.findIndex(item => item.id === currentSong.id)
+function findIndex(list, currentSong) {
+  return list.findIndex(item => item.id === currentSong.id)
 }
 
 const selectPlay = function ({
@@ -48,7 +48,53 @@ const randomPlay = function ({
   commit(types.SET_PLAYING_STATE, true)
 }
 
+const insertSong = function ({
+  commit,
+  state
+}, song) {
+  let playList = state.playList.slice()
+  let sequenceList = state.sequenceList.slice()
+  let currentIndex = state.currentIndex
+  // 记录当前歌曲
+  let currentSong = playList[currentIndex]
+  // 查找待插入的歌曲是否存在于已有歌曲的列表当中
+  // 并返回这个索引值
+  let fpIndex = findIndex(playList, song)
+  // 将歌曲插入
+  currentIndex += 1
+  // 当前索引的位置插入
+  playList.splice(currentIndex, 0, song)
+  //  更改playList 如果包含这首歌
+  if (fpIndex > -1) {
+    if (currentIndex > fpIndex) {
+      playList.splice(fpIndex, 1)
+      currentIndex--
+    } else {
+      playList.splice(fpIndex + 1, 1)
+    }
+  }
+  // 更改sequenceList
+  let currentSIndex = findIndex(sequenceList, currentSong) + 1
+  let fsIndex = findIndex(sequenceList, song)
+  sequenceList.splice(currentSIndex, 0, song)
+  // 如果包含这首歌
+  if (fsIndex > -1) {
+    if (currentSIndex > fsIndex) {
+      sequenceList.splice(fsIndex, 1)
+    } else {
+      sequenceList.splice(fsIndex + 1, 1)
+    }
+  }
+
+  commit(types.SET_PLAY_LIST, playList)
+  commit(types.SET_SEQUENCE_LIST, sequenceList)
+  commit(types.SET_CURRENT_INDEX, currentIndex)
+  commit(types.SET_FULL_SCREEN, true)
+  commit(types.SET_PLAYING_STATE, true)
+}
+
 export {
   selectPlay,
-  randomPlay
+  randomPlay,
+  insertSong
 }
