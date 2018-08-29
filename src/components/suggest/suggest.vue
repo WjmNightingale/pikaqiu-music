@@ -1,5 +1,5 @@
 <template>
-  <div class="suggest">
+  <scroll class="suggest" :data="result" :pullup="pullup" @scrollToEnd="onScrollToEnd">
     <ul class="suggest-list">
       <li class="suggest-item" v-for="(item, index) in result" :key="index">
         <div :class="getIconCls(item)">
@@ -10,14 +10,18 @@
         </div>
       </li>
     </ul>
-  </div>
+    <loading v-show="hasMore" title=""></loading>
+  </scroll>
 </template>
 
 <script type="text/ecmascript-6">
+import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 import { getSearch } from 'api/search'
 import { ERR_OK } from 'api/config'
-import { filterSinger } from 'common/js/song'
+import { createSong } from 'common/js/song'
 const TYPE_SINGER = 'singer'
+const perpage = 20
 export default {
   props: {
     query: {
@@ -32,26 +36,39 @@ export default {
   data() {
     return {
       page: 1,
+      pullup: true,
+      // 检测是否还有数据可上拉加载 默认为true
+      hasMore: true,
       result: []
     }
   },
   watch: {
     query(newQuery) {
-      console.log('侦听到了查询参数的变化')
       this.search(newQuery)
     }
   },
   methods: {
     search(query) {
-      console.log('开始查询')
-      getSearch(this.query, this.page, this.showSinger).then(res => {
-        console.log('查询了啊')
-        console.log(typeof res)
-        console.log(res)
+      this.page = 1
+      this.hasMore = true
+      getSearch(this.query, this.page, this.showSinger, perpage).then(res => {
         if (res.code === ERR_OK) {
-          console.log('查询结果为--')
-          console.log(res.data)
           this.result = this._genResult(res.data)
+          this._checkMoreData(res.data)
+        }
+      })
+    },
+    onScrollToEnd() {
+      console.log('上拉加载')
+      // 下拉加载刷新
+      if (!this.hasMore) {
+        return
+      }
+      this.page += 1
+      getSearch(this.query, this.page, this.showSinger, perpage).then(res => {
+        if (res.code === ERR_OK) {
+          this.result = this.result.concat(this._genResult(res.data))
+          this._checkMoreData(res.data)
         }
       })
     },
@@ -66,7 +83,7 @@ export default {
       if (item.type === TYPE_SINGER) {
         return item.singername
       } else {
-        return `${item.songname}-${filterSinger(item.singer)}`
+        return `${item.name}-${item.singer}`
       }
     },
     _genResult(data) {
@@ -75,12 +92,33 @@ export default {
         ret.push({ ...data.zhida, ...{ type: TYPE_SINGER } })
       }
       if (data.song) {
-        ret = ret.concat(data.song.list)
+        ret = ret.concat(this._normalizeSongs(data.song.list))
       }
       return ret
+    },
+    _normalizeSongs(list) {
+      let ret = []
+      list.forEach(musicData => {
+        if (musicData.songid && musicData.albumid) {
+          ret.push(createSong(musicData))
+        }
+      })
+      return ret
+    },
+    _checkMoreData(data) {
+      const song = data.song
+      if (
+        !song.list.length ||
+        song.curnum + (song.curpage - 1) * perpage >= song.totalnum
+      ) {
+        this.hasMore = false
+      }
     }
   },
-  components: {}
+  components: {
+    Scroll,
+    Loading
+  }
 }
 </script>
 
@@ -105,6 +143,7 @@ export default {
           color $color-text-d
       .name
         flex 1
+        margin-left 2px
         font-size $font-size-medium
         color $color-text-d
         overflow hidden

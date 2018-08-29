@@ -28,6 +28,11 @@ export default {
     listenScroll: {
       type: Boolean,
       default: false
+    },
+    // 是否开启上拉加载刷新
+    pullup: {
+      tyep: Boolean,
+      default: false
     }
   },
   data() {
@@ -50,6 +55,16 @@ export default {
         this.scroll.on('scroll', pos => {
           // pos Object
           vm.$emit('scroll', pos)
+        })
+      }
+      if (this.pullup) {
+        // 如果需要上拉刷新，监听better-scroll的`scrollEnd`事件
+        this.scroll.on('scrollEnd', () => {
+          if (this.scroll.y <= this.scroll.maxScrollY + 50) {
+            console.log('滚动到底部 派发事件')
+            // 滚动到底部 派发事件
+            this.$emit('scrollToEnd')
+          }
         })
       }
     },
