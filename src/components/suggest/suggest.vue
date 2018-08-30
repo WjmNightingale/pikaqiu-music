@@ -58,15 +58,20 @@ export default {
   methods: {
     selectItem(item) {
       if (item.type === TYPE_SINGER) {
+        // 点击歌手，跳转歌手详情页面
         const singer = new Singer({
-          id: item.singerid,
+          id: item.singermid,
           name: item.singername
         })
+        // 路由跳转
+        // avatar: "https://y.gtimg.cn/music/photo_new/T001R300x300M0004558.jpg?max_age=2592000"
+        console.log(singer)
         this.$router.push({
-          path: `/serach/${singer.id}`
+          path: `/search/${singer.id}`
         })
-        this.setSinger(item)
+        this.setSinger(singer)
       } else {
+        // 点击歌曲，向当前歌单列表插入一首歌
         this.insertSong(item)
       }
     },
@@ -110,8 +115,10 @@ export default {
       }
     },
     _genResult(data) {
+      console.log('需要处理的数据--')
+      console.log(data)
       let ret = []
-      if (data.zhida && data.zhida.singerid) {
+      if (data.zhida && data.zhida.singerid && this.page === 1) {
         ret.push({ ...data.zhida, ...{ type: TYPE_SINGER } })
       }
       if (data.song) {

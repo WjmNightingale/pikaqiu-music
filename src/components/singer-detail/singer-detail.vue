@@ -28,9 +28,15 @@ export default {
   },
   methods: {
     _getSingerDetail() {
+      console.log('当前路由')
+      console.log(this.$router)
       const singerId = this.singer.id
       if (!singerId) {
-        this.$router.push('/singer')
+        if (this.$router.history.current.fullPath.indexOf('singer') > 0) {
+          this.$router.push('/singer')
+        } else {
+          this.$router.push('/search')
+        }
         return
       }
       getSingerDetail(singerId).then(res => {

@@ -39,14 +39,11 @@ export default {
       this.$refs.searchBox.setQuery(query)
     },
     onQueryChange(query) {
-      console.log('查询参数变化啦')
       this.query = query
     },
     _getHotKey() {
       getHotKey().then(res => {
         if (res.code === ERR_OK) {
-          console.log('获取热门搜索')
-          console.log(res.data)
           this.hotKey = res.data.hotkey.slice(0, 10)
         }
       })
