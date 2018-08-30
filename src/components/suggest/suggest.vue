@@ -75,7 +75,7 @@ export default {
         this.insertSong(item)
       }
       // 派发事件 告知父组件它所处的状态
-      this.$emit('select')
+      this.$emit('select', this.query)
     },
     search(query) {
       // 改变query再次查询时，需要重置

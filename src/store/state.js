@@ -2,6 +2,10 @@ import {
   playMode
 } from 'common/js/config'
 
+import {
+  loadSearch
+} from 'common/js/cache'
+
 // 基础数据
 
 const state = {
@@ -21,7 +25,7 @@ const state = {
   // 当前播放歌曲的索引
   currentIndex: -1,
   // 搜索历史
-  searchHistory: []
+  searchHistory: loadSearch()
 }
 
 export default state

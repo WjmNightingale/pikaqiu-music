@@ -5,6 +5,9 @@ import {
 import {
   shuffle
 } from 'common/js/util'
+import {
+  saveSearch
+} from 'common/js/cache'
 
 function findIndex(list, currentSong) {
   return list.findIndex(item => item.id === currentSong.id)
@@ -101,7 +104,9 @@ const insertSong = function ({
 
 const saveSearchHistory = function ({
   commit
-}, query) {}
+}, query) {
+  commit(types.SET_SEARCH_HISTORY, saveSearch(query))
+}
 
 export {
   selectPlay,
