@@ -9,14 +9,18 @@
           <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
+      <loading v-show="hasMore" title=""></loading>
     </ul>
-    <loading v-show="hasMore" title=""></loading>
+    <div class="no-result-wrapper" v-show="!hasMore && !result.length">
+      <no-result title="抱歉，暂无搜索结果"></no-result>
+    </div>
   </scroll>
 </template>
 
 <script type="text/ecmascript-6">
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
+import NoResult from 'base/no-result/no-result'
 import { getSearch } from 'api/search'
 import { ERR_OK } from 'api/config'
 import { createSong } from 'common/js/song'
@@ -140,7 +144,8 @@ export default {
   },
   components: {
     Scroll,
-    Loading
+    Loading,
+    NoResult
   }
 }
 </script>
