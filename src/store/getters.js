@@ -21,6 +21,10 @@ const currentSong = (state) => {
   return state.playList[state.currentIndex] || {}
 }
 
+const searchHistory = (state) => {
+  return state.searchHistory
+}
+
 export {
   singer,
   disc,
@@ -31,5 +35,6 @@ export {
   sequenceList,
   mode,
   currentIndex,
-  currentSong
+  currentSong,
+  searchHistory
 }

@@ -99,8 +99,13 @@ const insertSong = function ({
   commit(types.SET_PLAYING_STATE, true)
 }
 
+const saveSearchHistory = function ({
+  commit
+}, query) {}
+
 export {
   selectPlay,
   randomPlay,
-  insertSong
+  insertSong,
+  saveSearchHistory
 }

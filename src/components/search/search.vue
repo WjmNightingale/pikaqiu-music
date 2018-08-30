@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <suggest :query="query" @inputBlur="onInputBlur"></suggest>
+      <suggest :query="query" @inputBlur="onInputBlur" @select="onSelect"></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -45,6 +45,7 @@ export default {
       console.log('这里开始调用子组件serach-box')
       this.$refs.serachBox.blur()
     },
+    onSelect() {},
     _getHotKey() {
       getHotKey().then(res => {
         if (res.code === ERR_OK) {

@@ -74,6 +74,8 @@ export default {
         // 点击歌曲，向当前歌单列表插入一首歌
         this.insertSong(item)
       }
+      // 派发事件 告知父组件它所处的状态
+      this.$emit('select')
     },
     search(query) {
       // 改变query再次查询时，需要重置
@@ -101,7 +103,6 @@ export default {
       })
     },
     onListScroll() {
-      console.log('这里是inputBlur事件')
       this.$emit('inputBlur')
     },
     getIconCls(item) {
