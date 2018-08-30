@@ -33,6 +33,11 @@ export default {
     pullup: {
       tyep: Boolean,
       default: false
+    },
+    // 是否监听Scroll内部的滚动事件
+    beforeScroll: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -65,6 +70,13 @@ export default {
             // 滚动到底部 派发事件
             this.$emit('scrollToEnd')
           }
+        })
+      }
+      if (this.beforeScroll) {
+        // 需要监听scroll内部的滚动
+        this.scroll.on('beforeScrollStart', () => {
+          console.log('这里是listScroll')
+          this.$emit('listScroll')
         })
       }
     },

@@ -1,5 +1,5 @@
 <template>
-  <scroll class="suggest" :data="result" :pullup="pullup" @scrollToEnd="onScrollToEnd" ref="suggest">
+  <scroll class="suggest" :data="result" :pullup="pullup" :beforeScroll="beforeScroll" @scrollToEnd="onScrollToEnd" @listScroll="onListScroll" ref="suggest">
     <ul class="suggest-list">
       <li @click="selectItem(item)" class="suggest-item" v-for="(item, index) in result" :key="index">
         <div :class="getIconCls(item)">
@@ -22,6 +22,7 @@ import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import NoResult from 'base/no-result/no-result'
 import { getSearch } from 'api/search'
+import { getSongUrl } from 'api/song'
 import { ERR_OK } from 'api/config'
 import { createSong } from 'common/js/song'
 import { Singer } from 'common/js/singer'
@@ -45,6 +46,7 @@ export default {
     return {
       page: 1,
       pullup: true,
+      beforeScroll: true,
       // 检测是否还有数据可上拉加载 默认为true
       hasMore: true,
       result: []
@@ -64,8 +66,6 @@ export default {
           name: item.singername
         })
         // 路由跳转
-        // avatar: "https://y.gtimg.cn/music/photo_new/T001R300x300M0004558.jpg?max_age=2592000"
-        console.log(singer)
         this.$router.push({
           path: `/search/${singer.id}`
         })
@@ -100,6 +100,10 @@ export default {
         }
       })
     },
+    onListScroll() {
+      console.log('这里是inputBlur事件')
+      this.$emit('inputBlur')
+    },
     getIconCls(item) {
       if (item.type === TYPE_SINGER) {
         return 'icon-mine'
@@ -115,8 +119,6 @@ export default {
       }
     },
     _genResult(data) {
-      console.log('需要处理的数据--')
-      console.log(data)
       let ret = []
       if (data.zhida && data.zhida.singerid && this.page === 1) {
         ret.push({ ...data.zhida, ...{ type: TYPE_SINGER } })
@@ -133,6 +135,9 @@ export default {
           ret.push(createSong(musicData))
         }
       })
+      // console.log('处理过的数据')
+      // console.log(ret)
+      getSongUrl(ret)
       return ret
     },
     _checkMoreData(data) {

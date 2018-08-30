@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <suggest :query="query"></suggest>
+      <suggest :query="query" @inputBlur="onInputBlur"></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -40,6 +40,10 @@ export default {
     },
     onQueryChange(query) {
       this.query = query
+    },
+    onInputBlur() {
+      console.log('这里开始调用子组件serach-box')
+      this.$refs.serachBox.blur()
     },
     _getHotKey() {
       getHotKey().then(res => {

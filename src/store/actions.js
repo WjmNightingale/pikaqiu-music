@@ -52,6 +52,9 @@ const insertSong = function ({
   commit,
   state
 }, song) {
+  // array.slice()会返回一个数组副本
+  // Array.prototype.slice()
+  // 该方法返回一个从开始到结束（不包括结束）选择的数组的一部分浅拷贝到一个新数组对象。且原始数组不会被修改。
   let playList = state.playList.slice()
   let sequenceList = state.sequenceList.slice()
   let currentIndex = state.currentIndex
@@ -66,10 +69,13 @@ const insertSong = function ({
   playList.splice(currentIndex, 0, song)
   //  更改playList 如果包含这首歌
   if (fpIndex > -1) {
+    // 插入歌曲的当前索引 大于已存在的歌曲的索引(两首歌是一样的)
+    // ['1','3','4'] => ['1','3','4','3'] => ['1','4','3']
     if (currentIndex > fpIndex) {
       playList.splice(fpIndex, 1)
       currentIndex--
     } else {
+      // ['1','3','4'] => ['1','4','3','4'] => ['1','4','3']
       playList.splice(fpIndex + 1, 1)
     }
   }

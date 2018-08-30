@@ -1,12 +1,13 @@
 <template>
   <div class="search-box">
     <i class="icon-search"></i>
-    <input v-model="query" type="text" class="box" :placeholder="placeholder">
+    <input ref="queryInput" v-model="query" type="text" class="box" :placeholder="placeholder">
     <i @click="clearQuery" v-show="query" class="icon-dismiss"></i>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import { debounce } from 'common/js/util'
 export default {
   props: {
     placeholder: {
@@ -25,12 +26,21 @@ export default {
     },
     clearQuery() {
       this.query = ''
+    },
+    // 对外提供一个blur方法
+    blur() {
+      console.log('这里开始执行失焦')
+      this.$refs.queryInput.blur()
     }
   },
   created() {
-    this.$watch('query', newQuery => {
-      this.$emit('query', newQuery)
-    })
+    // 事件节流
+    this.$watch(
+      'query',
+      debounce(newQuery => {
+        this.$emit('query', newQuery)
+      }, 2000)
+    )
   },
   components: {}
 }
