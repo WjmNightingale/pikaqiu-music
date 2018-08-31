@@ -21,10 +21,10 @@ const playListMixin = {
     }
   },
   mounted() {
-    this.handlePlayList()
+    this.handlePlayList(this.playList)
   },
   activated() {
-    this.handlePlayList()
+    this.handlePlayList(this.playList)
   }
 }
 

@@ -56,8 +56,8 @@ export default {
     this._getDiscList()
   },
   methods: {
-    handlePlayList() {
-      const bottom = this.playList.length > 0 ? '52px' : ''
+    handlePlayList(playList) {
+      const bottom = playList.length > 0 ? '52px' : ''
       this.$refs.recommend.style.bottom = bottom
       this.$refs.scroll.refresh()
     },

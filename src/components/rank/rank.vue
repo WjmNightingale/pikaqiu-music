@@ -37,9 +37,9 @@ export default {
     }
   },
   methods: {
-    handlePlayList() {
+    handlePlayList(playList) {
       // mixin
-      const bottom = this.playList.length > 0 ? '60px' : ''
+      const bottom = playList.length > 0 ? '60px' : ''
       this.$refs.rank.style.bottom = bottom
       this.$refs.topList.refresh()
     },

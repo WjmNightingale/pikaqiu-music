@@ -23,7 +23,7 @@ export default {
     },
     confirmBtnText: {
       type: String,
-      default: '确定'
+      default: '清空'
     },
     cancelBtnText: {
       type: String,

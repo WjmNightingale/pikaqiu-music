@@ -3,36 +3,39 @@
     <div class="search-box-wrapper">
       <search-box ref="serachBox" @query="onQueryChange"></search-box>
     </div>
-    <div class="shortcut-wrapper" v-show="!query">
-      <div class="shortcut">
-        <div class="hot-key">
-          <h1 class="title">热门搜索</h1>
-          <ul>
-            <li class="item" @click="addQuery(item.k)" v-for="(item,index) in hotKey" :key="index">
-              <span>{{item.k}}</span>
-            </li>
-          </ul>
+    <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
+      <scroll ref="shortcut" class="shortcut" :data="shortcutData">
+        <div>
+          <div class="hot-key">
+            <h1 class="title">热门搜索</h1>
+            <ul>
+              <li class="item" @click="addQuery(item.k)" v-for="(item,index) in hotKey" :key="index">
+                <span>{{item.k}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="search-history" v-show="searchHistory.length">
+            <h1 class="title">
+              <span class="text">搜索历史</span>
+              <span class="clear" @click="clearAllSearches">
+                <i class="icon-clear"></i>
+              </span>
+            </h1>
+            <search-list @select="onSearchSelect" @delete="onSearchDelete" :searches="searchHistory"></search-list>
+          </div>
         </div>
-        <div class="search-history" v-show="searchHistory.length">
-          <h1 class="title">
-            <span class="text">搜索历史</span>
-            <span class="clear" @click="clearAllSearches">
-              <i class="icon-clear"></i>
-            </span>
-          </h1>
-          <search-list @select="onSearchSelect" @delete="onSearchDelete" :searches="searchHistory"></search-list>
-        </div>
-      </div>
+      </scroll>
     </div>
     <div class="search-result" v-show="query">
       <suggest :query="query" @inputBlur="onInputBlur" @select="onSelect"></suggest>
     </div>
-    <confirm @confirm="onConfirm" @cancel="onCancel" ref="confirm" text="即将清空搜索历史？"></confirm>
+    <confirm @confirm="onConfirm" @cancel="onCancel" ref="confirm" text="是否清空搜索历史？"></confirm>
     <router-view></router-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import Scroll from 'base/scroll/scroll'
 import SearchBox from 'base/search-box/search-box'
 import SearchList from 'base/search-list/search-list'
 import Suggest from 'components/suggest/suggest'
@@ -40,7 +43,9 @@ import Confirm from 'base/confirm/confirm'
 import { getHotKey } from 'api/search'
 import { ERR_OK } from 'api/config'
 import { mapGetters, mapActions } from 'vuex'
+import { playListMixin } from 'common/js/mixin'
 export default {
+  mixins: [playListMixin],
   data() {
     return {
       query: '',
@@ -48,26 +53,42 @@ export default {
     }
   },
   computed: {
+    shortcutData() {
+      return this.hotKey.concat(this.searchHistory)
+    },
     ...mapGetters(['searchHistory'])
   },
+  watch: {
+    query(newQuery) {
+      // watch query 的改变
+      if (!newQuery) {
+        // 如果是从搜索界面切换到搜索历史
+        setTimeout(() => {
+          this.$refs.shortcut.refresh()
+        }, 20)
+      }
+    }
+  },
   methods: {
+    handlePlayList(playList) {
+      const bottom = playList.length > 0 ? '60px' : ''
+      this.$refs.shortcutWrapper.style.bottom = bottom
+      this.$refs.shortcut.refresh()
+    },
     addQuery(query) {
-      console.log(query)
-      console.log(this.$refs.serachBox)
       this.$refs.serachBox.setQuery(query)
     },
     onQueryChange(query) {
       this.query = query
     },
     onInputBlur() {
-      console.log('这里开始调用子组件serach-box')
       this.$refs.serachBox.blur()
     },
     onSelect(query) {
       // 选择时存储搜索关键词
       this.saveSearchHistory(query)
       // window.localStorage.clear()
-      console.log(window.localStorage)
+      // console.log(window.localStorage)
     },
     clearAllSearches() {
       this.$refs.confirm.show()
@@ -101,6 +122,7 @@ export default {
     this._getHotKey()
   },
   components: {
+    Scroll,
     SearchBox,
     SearchList,
     Suggest,

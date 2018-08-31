@@ -26,8 +26,8 @@ export default {
     ListView
   },
   methods: {
-    handlePlayList() {
-      const bottom = this.playList.length > 0 ? '52px' : ''
+    handlePlayList(playList) {
+      const bottom = playList.length > 0 ? '52px' : ''
       this.$refs.singer.style.bottom = bottom
       this.$refs.list.refresh()
     },
