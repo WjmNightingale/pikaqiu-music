@@ -29,6 +29,7 @@ const mutations = {
   [types.SET_CURRENT_INDEX](state, index) {
     state.currentIndex = index
   },
+  // Dynasty Warriors u.r.c
   [types.SET_SEARCH_HISTORY](state, searchHistory) {
     state.searchHistory = searchHistory
   }

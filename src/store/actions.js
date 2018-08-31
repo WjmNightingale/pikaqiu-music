@@ -6,7 +6,9 @@ import {
   shuffle
 } from 'common/js/util'
 import {
-  saveSearch
+  saveSearch,
+  deleteSearch,
+  clearSearch
 } from 'common/js/cache'
 
 function findIndex(list, currentSong) {
@@ -108,9 +110,23 @@ const saveSearchHistory = function ({
   commit(types.SET_SEARCH_HISTORY, saveSearch(query))
 }
 
+const deleteSearchHistory = function ({
+  commit
+}, query) {
+  commit(types.SET_SEARCH_HISTORY, deleteSearch(query))
+}
+
+const clearSearchHistory = function ({
+  commit
+}) {
+  commit(types.SET_SEARCH_HISTORY, clearSearch())
+}
+
 export {
   selectPlay,
   randomPlay,
   insertSong,
-  saveSearchHistory
+  saveSearchHistory,
+  deleteSearchHistory,
+  clearSearchHistory
 }

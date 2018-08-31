@@ -16,23 +16,27 @@
         <div class="search-history" v-show="searchHistory.length">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear">
+            <span class="clear" @click="clearAllSearches">
               <i class="icon-clear"></i>
             </span>
           </h1>
+          <search-list @select="onSearchSelect" @delete="onSearchDelete" :searches="searchHistory"></search-list>
         </div>
       </div>
     </div>
     <div class="search-result" v-show="query">
       <suggest :query="query" @inputBlur="onInputBlur" @select="onSelect"></suggest>
     </div>
+    <confirm @confirm="onConfirm" @cancel="onCancel" ref="confirm" text="即将清空搜索历史？"></confirm>
     <router-view></router-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import SearchBox from 'base/search-box/search-box'
+import SearchList from 'base/search-list/search-list'
 import Suggest from 'components/suggest/suggest'
+import Confirm from 'base/confirm/confirm'
 import { getHotKey } from 'api/search'
 import { ERR_OK } from 'api/config'
 import { mapGetters, mapActions } from 'vuex'
@@ -60,9 +64,25 @@ export default {
       this.$refs.serachBox.blur()
     },
     onSelect(query) {
+      // 选择时存储搜索关键词
       this.saveSearchHistory(query)
       // window.localStorage.clear()
       console.log(window.localStorage)
+    },
+    clearAllSearches() {
+      this.$refs.confirm.show()
+    },
+    onSearchSelect(item) {
+      this.addQuery(item)
+    },
+    onSearchDelete(item) {
+      this.deleteSearchHistory(item)
+    },
+    onConfirm() {
+      this.clearSearchHistory()
+    },
+    onCancel() {
+      this.$refs.confirm.hide()
     },
     _getHotKey() {
       getHotKey().then(res => {
@@ -71,14 +91,20 @@ export default {
         }
       })
     },
-    ...mapActions(['saveSearchHistory'])
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory',
+      'clearSearchHistory'
+    ])
   },
   created() {
     this._getHotKey()
   },
   components: {
     SearchBox,
-    Suggest
+    SearchList,
+    Suggest,
+    Confirm
   }
 }
 </script>
