@@ -108,7 +108,35 @@ const deleteSong = function ({
   commit,
   state
 }, song) {
+  let playList = state.playList.slice()
+  let sequenceList = state.sequenceList.slice()
+  let currentIndex = state.currentIndex
+  let fpIndex = findIndex(playList, song)
+  playList.splice(fpIndex, 1)
+  let fsIndex = findIndex(sequenceList, song)
+  sequenceList.splice(fsIndex, 1)
+  if (currentIndex > fpIndex || currentIndex === playList.length) {
+    currentIndex--
+  }
 
+  commit(types.SET_PLAY_LIST, playList)
+  commit(types.SET_SEQUENCE_LIST, sequenceList)
+  commit(types.SET_CURRENT_INDEX, currentIndex)
+
+  if (!playList.length) {
+    commit(types.SET_PLAYING_STATE, false)
+  } else {
+    commit(types.SET_PLAYING_STATE, true)
+  }
+}
+
+const deleteSongList = function ({
+  commit
+}) {
+  commit(types.SET_CURRENT_INDEX, -1)
+  commit(types.SET_PLAY_LIST, [])
+  commit(types.SET_SEQUENCE_LIST, [])
+  commit(types.SET_PLAYING_STATE, false)
 }
 
 const saveSearchHistory = function ({
@@ -133,6 +161,8 @@ export {
   selectPlay,
   randomPlay,
   insertSong,
+  deleteSong,
+  deleteSongList,
   saveSearchHistory,
   deleteSearchHistory,
   clearSearchHistory
