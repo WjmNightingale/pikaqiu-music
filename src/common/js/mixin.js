@@ -50,7 +50,6 @@ const playerMixin = {
   },
   methods: {
     changeMode() {
-      console.log('点击播放模式')
       const mode = (this.mode + 1) % 3
       this.setMode(mode)
       let list = null
@@ -78,7 +77,40 @@ const playerMixin = {
   }
 }
 
+const searchMixin = {
+  data() {
+    return {
+      query: '',
+      refreshDelay: 20
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'searchHistory'
+    ])
+  },
+  methods: {
+    onQueryChange(query) {
+      this.query = query.trim()
+    },
+    onInputBlur() {
+      this.$refs.searchBox.blur()
+    },
+    addQuery(query) {
+      this.$refs.searchBox.setQuery(query)
+    },
+    saveSearch() {
+      this.saveSearchHistory(this.query)
+    },
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory'
+    ])
+  }
+}
+
 export {
   playListMixin,
-  playerMixin
+  playerMixin,
+  searchMixin
 }

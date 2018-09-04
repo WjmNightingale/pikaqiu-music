@@ -1,7 +1,7 @@
 <template>
   <div class="search">
     <div class="search-box-wrapper">
-      <search-box ref="serachBox" @query="onQueryChange"></search-box>
+      <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
       <scroll ref="shortcut" class="shortcut" :data="shortcutData">
@@ -27,7 +27,7 @@
       </scroll>
     </div>
     <div class="search-result" v-show="query">
-      <suggest :query="query" @inputBlur="onInputBlur" @select="onSelect"></suggest>
+      <suggest :query="query" @inputBlur="onInputBlur" @select="saveSearch"></suggest>
     </div>
     <confirm @confirm="onConfirm" @cancel="onCancel" ref="confirm" text="是否清空搜索历史？"></confirm>
     <router-view></router-view>
@@ -42,21 +42,19 @@ import Suggest from 'components/suggest/suggest'
 import Confirm from 'base/confirm/confirm'
 import { getHotKey } from 'api/search'
 import { ERR_OK } from 'api/config'
-import { mapGetters, mapActions } from 'vuex'
-import { playListMixin } from 'common/js/mixin'
+import { mapActions } from 'vuex'
+import { playListMixin, searchMixin } from 'common/js/mixin'
 export default {
-  mixins: [playListMixin],
+  mixins: [playListMixin, searchMixin],
   data() {
     return {
-      query: '',
       hotKey: []
     }
   },
   computed: {
     shortcutData() {
       return this.hotKey.concat(this.searchHistory)
-    },
-    ...mapGetters(['searchHistory'])
+    }
   },
   watch: {
     query(newQuery) {
@@ -74,21 +72,6 @@ export default {
       const bottom = playList.length > 0 ? '60px' : ''
       this.$refs.shortcutWrapper.style.bottom = bottom
       this.$refs.shortcut.refresh()
-    },
-    addQuery(query) {
-      this.$refs.serachBox.setQuery(query)
-    },
-    onQueryChange(query) {
-      this.query = query
-    },
-    onInputBlur() {
-      this.$refs.serachBox.blur()
-    },
-    onSelect(query) {
-      // 选择时存储搜索关键词
-      this.saveSearchHistory(query)
-      // window.localStorage.clear()
-      // console.log(window.localStorage)
     },
     clearAllSearches() {
       this.$refs.confirm.show()
@@ -112,11 +95,7 @@ export default {
         }
       })
     },
-    ...mapActions([
-      'saveSearchHistory',
-      'deleteSearchHistory',
-      'clearSearchHistory'
-    ])
+    ...mapActions(['clearSearchHistory'])
   },
   created() {
     this._getHotKey()

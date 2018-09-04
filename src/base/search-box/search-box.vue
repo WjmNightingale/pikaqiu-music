@@ -29,7 +29,6 @@ export default {
     },
     // 对外提供一个blur方法
     blur() {
-      console.log('这里开始执行失焦')
       this.$refs.queryInput.blur()
     }
   },
