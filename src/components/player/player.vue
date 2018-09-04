@@ -79,11 +79,12 @@
             <i class="icon-mini" @click.stop="togglePlaying" :class="miniIconPlayState"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlayList">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <play-list  ref="playList"></play-list>
     <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="timeUpdate" @ended="end"></audio>
   </div>
 </template>
@@ -95,6 +96,7 @@ import { prefixStyle } from 'common/js/dom'
 import ProgressBar from 'base/progress-bar/progress-bar'
 import ProgressCircle from 'base/progress-circle/progress-circle'
 import Scroll from 'base/scroll/scroll'
+import PlayList from 'components/playlist/playlist'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
 import Lyric from 'lyric-parser'
@@ -249,6 +251,9 @@ export default {
     onOpen() {
       // 打开播放器
       this.setFullScreen(true)
+    },
+    showPlayList() {
+      this.$refs.playList.show()
     },
     timeUpdate(e) {
       this.currentTime = e.target.currentTime
@@ -467,7 +472,8 @@ export default {
   components: {
     ProgressBar,
     ProgressCircle,
-    Scroll
+    Scroll,
+    PlayList
   },
   created() {
     this.touch = {}

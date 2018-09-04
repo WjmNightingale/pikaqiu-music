@@ -104,6 +104,13 @@ const insertSong = function ({
   commit(types.SET_PLAYING_STATE, true)
 }
 
+const deleteSong = function ({
+  commit,
+  state
+}, song) {
+
+}
+
 const saveSearchHistory = function ({
   commit
 }, query) {
