@@ -4,7 +4,7 @@
       <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class="title">
-            <i class="icon" :class="iconMode" @click="changeMode"></i>
+            <i class="icon" :class="iconMode" @click.stop="changeMode"></i>
             <span class="text">{{modeText}}</span>
             <span class="clear" @click.stop="clearSequenceList">
               <i class="icon-clear"></i>
@@ -14,7 +14,7 @@
         <scroll ref="listContent" class="list-content" :data="sequenceList">
           <transition-group tag="ul" name="list">
             <li ref="listItem" class="item" v-for="(item, index) in sequenceList" :key="item.mid" @click="selectItem(item, index)">
-              <i :class="getCurrentIcon(item)"></i>
+              <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
               <span class="like">
                 <i class="icon-not-favorite"></i>
@@ -44,7 +44,7 @@
 import Scroll from 'base/scroll/scroll'
 import Confirm from 'base/confirm/confirm'
 import { playMode } from 'common/js/config'
-import {playerMixin} from 'common/js/mixin'
+import { playerMixin } from 'common/js/mixin'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
   mixins: [playerMixin],

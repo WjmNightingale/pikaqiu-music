@@ -50,8 +50,9 @@ const playerMixin = {
   },
   methods: {
     changeMode() {
+      console.log('点击播放模式')
       const mode = (this.mode + 1) % 3
-      this.setPlayMode(mode)
+      this.setMode(mode)
       let list = null
       if (mode === playMode.random) {
         list = shuffle(this.sequenceList)
@@ -68,8 +69,8 @@ const playerMixin = {
       this.setCurrentIndex(index)
     },
     ...mapMutations({
-      setPlayMode: 'SET_PLAY_MODE',
-      setPlaylist: 'SET_PLAYLIST',
+      setMode: 'SET_MODE',
+      setPlaylist: 'SET_PLAY_LIST',
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayingState: 'SET_PLAYING_STATE'
     }),
