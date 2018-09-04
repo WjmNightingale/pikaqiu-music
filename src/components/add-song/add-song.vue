@@ -10,7 +10,9 @@
       <div class="search-box-wrapper">
         <search-box @query="search" placeholder="搜索歌曲"></search-box>
       </div>
-      <div class="shortcut" v-show="!query"></div>
+      <div class="shortcut" v-show="!query">
+        <switches :switches="switches" :currentIndex="currentIndex" @switch="switchItem"></switches>
+      </div>
       <div class="search-result" v-show="query">
         <suggest @select="selectSuggest" :query="query" :showSinger="showSinger"></suggest>
       </div>
@@ -20,13 +22,24 @@
 
 <script type="text/ecmascript-6">
 import SearchBox from 'base/search-box/search-box'
+import Switches from 'base/switches/switches'
 import Suggest from 'components/suggest/suggest'
+import { searchMixin } from 'common/js/mixin'
 export default {
+  mixins: [searchMixin],
   data() {
     return {
       showFlag: false,
-      query: '',
-      showSinger: false
+      showSinger: false,
+      currentIndex: 0,
+      switches: [
+        {
+          name: '最近播放'
+        },
+        {
+          name: '搜索历史'
+        }
+      ]
     }
   },
   methods: {
@@ -39,11 +52,17 @@ export default {
     search(query) {
       this.query = query
     },
-    selectSuggest() {}
+    selectSuggest() {
+      this.saveSearch()
+    },
+    switchItem(index) {
+      this.currentIndex = index
+    }
   },
   components: {
     SearchBox,
-    Suggest
+    Suggest,
+    Switches
   }
 }
 </script>
