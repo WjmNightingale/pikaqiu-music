@@ -8,23 +8,33 @@
         </div>
       </div>
       <div class="search-box-wrapper">
-        <search-box @query="search" placeholder="搜索歌曲"></search-box>
+        <search-box @query="onQueryChange" placeholder="搜索歌曲"></search-box>
       </div>
       <div class="shortcut" v-show="!query">
         <switches :switches="switches" :currentIndex="currentIndex" @switch="switchItem"></switches>
+        <div class="list-wrapper">
+          <scroll v-if="currentIndex === 0" :data="playHistory">
+            <div class="list-inner">
+              <song-list></song-list>
+            </div>
+          </scroll>
+        </div>
       </div>
       <div class="search-result" v-show="query">
-        <suggest @select="selectSuggest" :query="query" :showSinger="showSinger"></suggest>
+        <suggest @select="selectSuggest" :query="query" :showSinger="showSinger" @inputBlur="onInputBlur"></suggest>
       </div>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
+import Scroll from 'base/scroll/scroll'
 import SearchBox from 'base/search-box/search-box'
+import SongList from 'base/song-list/song-list'
 import Switches from 'base/switches/switches'
 import Suggest from 'components/suggest/suggest'
 import { searchMixin } from 'common/js/mixin'
+import { mapGetters } from 'vuex'
 export default {
   mixins: [searchMixin],
   data() {
@@ -42,15 +52,15 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapGetters(['playHistory'])
+  },
   methods: {
     show() {
       this.showFlag = true
     },
     hide() {
       this.showFlag = false
-    },
-    search(query) {
-      this.query = query
     },
     selectSuggest() {
       this.saveSearch()
@@ -60,6 +70,8 @@ export default {
     }
   },
   components: {
+    Scroll,
+    SongList,
     SearchBox,
     Suggest,
     Switches

@@ -5,6 +5,10 @@ const SEARCH_KEY = '__search__'
 
 const SEARCH_MAX_LENGTH = 15
 
+const PLAY_KEY = '__play__'
+
+const PLAY_MAX_LENGTH = 200
+
 function insertArray(arr, val, compare, maxLen) {
   // 将值插入数组
   const index = arr.findIndex(compare)
@@ -55,9 +59,24 @@ function clearSearch() {
   return []
 }
 
+function savePlay(song) {
+  let playHistories = storage.get(PLAY_KEY, [])
+  insertArray(playHistories, song, (item) => {
+    return item.id === song.id
+  }, PLAY_MAX_LENGTH)
+  storage.set(PLAY_KEY, playHistories)
+  return playHistories
+}
+
+function loadPlay() {
+  return storage.get(PLAY_KEY, [])
+}
+
 export {
   saveSearch,
   loadSearch,
   deleteSearch,
-  clearSearch
+  clearSearch,
+  savePlay,
+  loadPlay
 }

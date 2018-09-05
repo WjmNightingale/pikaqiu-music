@@ -25,6 +25,10 @@ const searchHistory = (state) => {
   return state.searchHistory
 }
 
+const playHistory = (state) => {
+  return state.playHistory
+}
+
 export {
   singer,
   disc,
@@ -36,5 +40,6 @@ export {
   mode,
   currentIndex,
   currentSong,
+  playHistory,
   searchHistory
 }

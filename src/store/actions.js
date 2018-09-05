@@ -8,7 +8,8 @@ import {
 import {
   saveSearch,
   deleteSearch,
-  clearSearch
+  clearSearch,
+  savePlay
 } from 'common/js/cache'
 
 function findIndex(list, currentSong) {
@@ -104,6 +105,7 @@ const insertSong = function ({
   commit(types.SET_PLAYING_STATE, true)
 }
 
+// 歌曲相关
 const deleteSong = function ({
   commit,
   state
@@ -130,6 +132,7 @@ const deleteSong = function ({
   }
 }
 
+// 歌曲列表相关
 const deleteSongList = function ({
   commit
 }) {
@@ -139,6 +142,7 @@ const deleteSongList = function ({
   commit(types.SET_PLAYING_STATE, false)
 }
 
+// 搜索历史相关
 const saveSearchHistory = function ({
   commit
 }, query) {
@@ -157,6 +161,13 @@ const clearSearchHistory = function ({
   commit(types.SET_SEARCH_HISTORY, clearSearch())
 }
 
+// 播放历史相关
+const savePlayHistory = function ({
+  commit
+}, song) {
+  commit(types.SET_PLAY_HISTORY, savePlay(song))
+}
+
 export {
   selectPlay,
   randomPlay,
@@ -165,5 +176,6 @@ export {
   deleteSongList,
   saveSearchHistory,
   deleteSearchHistory,
-  clearSearchHistory
+  clearSearchHistory,
+  savePlayHistory
 }

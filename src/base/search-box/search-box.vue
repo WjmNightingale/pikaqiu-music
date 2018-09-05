@@ -22,18 +22,20 @@ export default {
   },
   methods: {
     setQuery(query) {
+      // 选中搜索关键词时将关键词填充为input的值
       this.query = query
     },
     clearQuery() {
+      // 清空搜索栏关键词
       this.query = ''
     },
-    // 对外提供一个blur方法
     blur() {
+      // 对外提供一个blur方法
       this.$refs.queryInput.blur()
     }
   },
   created() {
-    // 事件节流
+    // 事件节流 处理以后2秒才发一个请求
     this.$watch(
       'query',
       debounce(newQuery => {

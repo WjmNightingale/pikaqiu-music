@@ -32,7 +32,11 @@ const mutations = {
   // Dynasty Warriors u.r.c
   [types.SET_SEARCH_HISTORY](state, searchHistory) {
     state.searchHistory = searchHistory
+  },
+  [types.SET_PLAY_HISTORY](state, playHistory) {
+    state.playHistory = playHistory
   }
+
 }
 
 export default mutations

@@ -3,7 +3,8 @@ import {
 } from 'common/js/config'
 
 import {
-  loadSearch
+  loadSearch,
+  loadPlay
 } from 'common/js/cache'
 
 // 基础数据
@@ -24,6 +25,8 @@ const state = {
   mode: playMode.sequence,
   // 当前播放歌曲的索引
   currentIndex: -1,
+  // 播放历史
+  playHistory: loadPlay(),
   // 搜索历史
   searchHistory: loadSearch()
 }
