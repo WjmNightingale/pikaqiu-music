@@ -76,11 +76,11 @@ export default {
     clearAllSearches() {
       this.$refs.confirm.show()
     },
-    onSearchSelect(item) {
-      this.addQuery(item)
+    onSearchSelect(query) {
+      this.addQuery(query)
     },
-    onSearchDelete(item) {
-      this.deleteSearchHistory(item)
+    onSearchDelete(query) {
+      this.deleteSearchHistory(query)
     },
     onConfirm() {
       this.clearSearchHistory()

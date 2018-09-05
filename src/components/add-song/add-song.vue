@@ -8,14 +8,19 @@
         </div>
       </div>
       <div class="search-box-wrapper">
-        <search-box @query="onQueryChange" placeholder="搜索歌曲"></search-box>
+        <search-box ref="searchBox" @query="onQueryChange" placeholder="搜索歌曲"></search-box>
       </div>
       <div class="shortcut" v-show="!query">
         <switches :switches="switches" :currentIndex="currentIndex" @switch="switchItem"></switches>
         <div class="list-wrapper">
-          <scroll v-if="currentIndex === 0" :data="playHistory">
+          <scroll ref="songList" class="list-scroll" v-if="currentIndex === 0" :data="playHistory">
             <div class="list-inner">
-              <song-list></song-list>
+              <song-list :songs="playHistory" @select="selectSong"></song-list>
+            </div>
+          </scroll>
+          <scroll ref="searchList" class="list-scroll" v-if="currentIndex === 1" :data="searchHistory">
+            <div class="list-inner">
+              <search-list @select="onSearchSelect" @delete="onSearchDelete" :searches="searchHistory"></search-list>
             </div>
           </scroll>
         </div>
@@ -31,10 +36,12 @@
 import Scroll from 'base/scroll/scroll'
 import SearchBox from 'base/search-box/search-box'
 import SongList from 'base/song-list/song-list'
+import SearchList from 'base/search-list/search-list'
 import Switches from 'base/switches/switches'
 import Suggest from 'components/suggest/suggest'
 import { searchMixin } from 'common/js/mixin'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+import { Song } from 'common/js/song'
 export default {
   mixins: [searchMixin],
   data() {
@@ -42,6 +49,7 @@ export default {
       showFlag: false,
       showSinger: false,
       currentIndex: 0,
+      delayRefresh: 20,
       switches: [
         {
           name: '最近播放'
@@ -53,25 +61,45 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['playHistory'])
+    ...mapGetters(['playHistory', 'searchHistory'])
   },
   methods: {
     show() {
       this.showFlag = true
+      setTimeout(() => {
+        if (this.currentIndex === 0) {
+          this.$refs.songList.refresh()
+        } else {
+          this.$refs.searchList.refresh()
+        }
+      }, this.delayRefresh)
     },
     hide() {
       this.showFlag = false
+    },
+    selectSong(song, index) {
+      if (index !== 0) {
+        this.insertSong(new Song(song))
+      }
+    },
+    onSearchSelect(query) {
+      this.addQuery(query)
+    },
+    onSearchDelete(query) {
+      this.deleteSearchHistory(query)
     },
     selectSuggest() {
       this.saveSearch()
     },
     switchItem(index) {
       this.currentIndex = index
-    }
+    },
+    ...mapActions(['insertSong'])
   },
   components: {
     Scroll,
     SongList,
+    SearchList,
     SearchBox,
     Suggest,
     Switches

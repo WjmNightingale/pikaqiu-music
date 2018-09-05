@@ -23,6 +23,8 @@ const selectPlay = function ({
   list,
   index
 }) {
+  // updateList -- 需要更新的播放列表
+  // updateIndex -- 需要更新的 currentIndex
   let updateList, updateIndex
   if (state.mode === playMode.random) {
     // 如果是随机播放
@@ -33,6 +35,12 @@ const selectPlay = function ({
     updateList = list
     updateIndex = index
   }
+  console.log('歌曲列表')
+  console.log(list)
+  console.log('更新列表')
+  console.log(updateList)
+  console.log('更新的下标')
+  console.log(updateIndex)
   commit(types.SET_SEQUENCE_LIST, list)
   commit(types.SET_PLAY_LIST, updateList)
   commit(types.SET_CURRENT_INDEX, updateIndex)

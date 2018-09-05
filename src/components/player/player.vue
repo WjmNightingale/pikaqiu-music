@@ -137,9 +137,12 @@ export default {
   },
   watch: {
     currentSong(newSong, oldSong) {
+      console.log('歌曲变化了')
+      console.log(newSong)
       if (!newSong.id || newSong.id === oldSong.id) {
         return
       }
+      console.log('开始播放')
       this.currentLyric && this.currentLyric.stop()
       // 为了保证浏览器能够响应audio播放，使用 setTimeout 替换 $nextTick
       // this.$nextTick(() => {

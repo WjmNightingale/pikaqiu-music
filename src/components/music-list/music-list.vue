@@ -94,7 +94,7 @@ export default {
     },
     onSelectSong(song, index) {
       // 开始播放歌曲
-      console.log(this.songs[index])
+      // console.log(this.songs[index])
       this.selectPlay({
         list: this.songs,
         index

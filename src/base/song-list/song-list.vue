@@ -37,6 +37,7 @@ export default {
       return `${song.singer}-${song.album}`
     },
     selectSong(song, index) {
+      console.log('歌曲被选择')
       this.$emit('select', song, index)
     },
     getRankCls(index) {
