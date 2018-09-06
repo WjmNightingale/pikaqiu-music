@@ -28,7 +28,7 @@ export default {
       }, this.delay)
     },
     hide() {
-      this.showFlag = true
+      this.showFlag = false
     }
   },
   components: {}
