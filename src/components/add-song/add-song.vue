@@ -28,6 +28,12 @@
       <div class="search-result" v-show="query">
         <suggest @select="selectSuggest" :query="query" :showSinger="showSinger" @inputBlur="onInputBlur"></suggest>
       </div>
+      <top-tip ref="topTip">
+        <div class="tip-title">
+          <i class="icon-ok"></i>
+          <span>选中的歌曲已经被添加到列表</span>
+        </div>
+      </top-tip>
     </div>
   </transition>
 </template>
@@ -38,6 +44,7 @@ import SearchBox from 'base/search-box/search-box'
 import SongList from 'base/song-list/song-list'
 import SearchList from 'base/search-list/search-list'
 import Switches from 'base/switches/switches'
+import TopTip from 'base/top-tip/top-tip'
 import Suggest from 'components/suggest/suggest'
 import { searchMixin } from 'common/js/mixin'
 import { mapGetters, mapActions } from 'vuex'
@@ -80,7 +87,11 @@ export default {
     selectSong(song, index) {
       if (index !== 0) {
         this.insertSong(new Song(song))
+        this.showTopTip()
       }
+    },
+    showTopTip() {
+      this.$refs.topTip.show()
     },
     onSearchSelect(query) {
       this.addQuery(query)
@@ -90,6 +101,7 @@ export default {
     },
     selectSuggest() {
       this.saveSearch()
+      this.showTopTip()
     },
     switchItem(index) {
       this.currentIndex = index
@@ -101,6 +113,7 @@ export default {
     SongList,
     SearchList,
     SearchBox,
+    TopTip,
     Suggest,
     Switches
   }

@@ -81,7 +81,7 @@ const searchMixin = {
   data() {
     return {
       query: '',
-      refreshDelay: 20
+      refreshDelay: 100
     }
   },
   computed: {
