@@ -15,6 +15,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { Song } from 'common/js/song'
 export default {
   props: {
     songs: {
@@ -38,6 +39,8 @@ export default {
     },
     selectSong(song, index) {
       console.log('歌曲被选择')
+      // 从缓存中读取的 song 对象 不再是 Song的实例，需要再次实例化一下
+      song = new Song(song)
       this.$emit('select', song, index)
     },
     getRankCls(index) {

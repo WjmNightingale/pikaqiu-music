@@ -4,7 +4,8 @@ import {
 
 import {
   loadSearch,
-  loadPlay
+  loadPlay,
+  loadFavorite
 } from 'common/js/cache'
 
 // 基础数据
@@ -28,7 +29,9 @@ const state = {
   // 播放历史
   playHistory: loadPlay(),
   // 搜索历史
-  searchHistory: loadSearch()
+  searchHistory: loadSearch(),
+  // 喜欢列表
+  favoriteList: loadFavorite()
 }
 
 export default state

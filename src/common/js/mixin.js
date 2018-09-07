@@ -41,15 +41,20 @@ const playerMixin = {
     iconMode() {
       return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
     },
+    favoriteIcon() {
+      return this.getFavoriteIcon(this.currentSong)
+    },
     ...mapGetters([
-      'sequenceList',
-      'playList',
+      'mode',
       'currentSong',
-      'mode'
+      'playList',
+      'sequenceList',
+      'favoriteList'
     ])
   },
   methods: {
     changeMode() {
+      // 播放器播放模式切换
       const mode = (this.mode + 1) % 3
       this.setMode(mode)
       let list = null
@@ -62,10 +67,33 @@ const playerMixin = {
       this.setPlaylist(list)
     },
     resetCurrentIndex(list) {
+      // 重置当前索引
       let index = list.findIndex((item) => {
         return item.id === this.currentSong.id
       })
       this.setCurrentIndex(index)
+    },
+    toggleFavorite(song) {
+      // 切换喜欢状态
+      if (this.isFavorite(song)) {
+        this.deleteFavoriteList(song)
+      } else {
+        this.saveFavoriteList(song)
+      }
+    },
+    getFavoriteIcon(song) {
+      // 切换喜欢样式
+      if (this.isFavorite(song)) {
+        return 'icon-favorite'
+      }
+      return 'icon-not-favorite'
+    },
+    isFavorite(song) {
+      // 检测是否喜欢
+      const index = this.favoriteList.findIndex((item) => {
+        return item.id === song.id
+      })
+      return index > -1
     },
     ...mapMutations({
       setMode: 'SET_MODE',
@@ -73,7 +101,10 @@ const playerMixin = {
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayingState: 'SET_PLAYING_STATE'
     }),
-    ...mapActions([])
+    ...mapActions([
+      'saveFavoriteList',
+      'deleteFavoriteList'
+    ])
   }
 }
 

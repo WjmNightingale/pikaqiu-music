@@ -29,6 +29,10 @@ const playHistory = (state) => {
   return state.playHistory
 }
 
+const favoriteList = (state) => {
+  return state.favoriteList
+}
+
 export {
   singer,
   disc,
@@ -41,5 +45,6 @@ export {
   currentIndex,
   currentSong,
   playHistory,
-  searchHistory
+  searchHistory,
+  favoriteList
 }

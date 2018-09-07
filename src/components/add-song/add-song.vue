@@ -48,7 +48,6 @@ import TopTip from 'base/top-tip/top-tip'
 import Suggest from 'components/suggest/suggest'
 import { searchMixin } from 'common/js/mixin'
 import { mapGetters, mapActions } from 'vuex'
-import { Song } from 'common/js/song'
 export default {
   mixins: [searchMixin],
   data() {
@@ -86,7 +85,7 @@ export default {
     },
     selectSong(song, index) {
       if (index !== 0) {
-        this.insertSong(new Song(song))
+        this.insertSong(song)
         this.showTopTip()
       }
     },

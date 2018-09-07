@@ -9,7 +9,9 @@ import {
   saveSearch,
   deleteSearch,
   clearSearch,
-  savePlay
+  savePlay,
+  saveFavorite,
+  deleteFavorite
 } from 'common/js/cache'
 
 function findIndex(list, currentSong) {
@@ -35,12 +37,6 @@ const selectPlay = function ({
     updateList = list
     updateIndex = index
   }
-  console.log('歌曲列表')
-  console.log(list)
-  console.log('更新列表')
-  console.log(updateList)
-  console.log('更新的下标')
-  console.log(updateIndex)
   commit(types.SET_SEQUENCE_LIST, list)
   commit(types.SET_PLAY_LIST, updateList)
   commit(types.SET_CURRENT_INDEX, updateIndex)
@@ -176,6 +172,20 @@ const savePlayHistory = function ({
   commit(types.SET_PLAY_HISTORY, savePlay(song))
 }
 
+// 喜欢相关
+
+const saveFavoriteList = function ({
+  commit
+}, song) {
+  commit(types.SET_FAVORITE_LIST, saveFavorite(song))
+}
+
+const deleteFavoriteList = function ({
+  commit
+}, song) {
+  commit(types.SET_FAVORITE_LIST, deleteFavorite(song))
+}
+
 export {
   selectPlay,
   randomPlay,
@@ -185,5 +195,7 @@ export {
   saveSearchHistory,
   deleteSearchHistory,
   clearSearchHistory,
-  savePlayHistory
+  savePlayHistory,
+  saveFavoriteList,
+  deleteFavoriteList
 }
