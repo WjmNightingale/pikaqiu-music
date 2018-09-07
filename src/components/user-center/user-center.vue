@@ -2,7 +2,7 @@
   <transition name="slide">
     <div class="user-center" @click.stop>
       <div class="back" @click="back">
-        <i class="icon-bakc"></i>
+        <i class="icon-back"></i>
       </div>
       <div class="switches-wrapper">
         <switches @switch="switchItem" :switches="switches" :currentIndex="currentIndex"></switches>
