@@ -31,7 +31,7 @@ export default {
     },
     // 是否开启上拉加载刷新
     pullup: {
-      tyep: Boolean,
+      type: Boolean,
       default: false
     },
     // 是否监听Scroll内部的滚动事件
@@ -51,6 +51,7 @@ export default {
       if (!this.$refs.wrapper) {
         return
       }
+      // 生成一个 better-scroll 实例
       this.scroll = new BScroll(this.$refs.wrapper, {
         probeType: this.probeType,
         click: this.click
